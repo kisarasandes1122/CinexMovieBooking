@@ -6,6 +6,7 @@ import MovieBooking from './Pages/MovieBooking'; // Import the MovieBooking comp
 import Footer from './components/Footer/Footer';
 import RegistrationForm from './components/RegistrationForm/RegistrationForm';
 import Moviepage from './Pages/MoviePage';
+import SignInform from './components/SignInform/SignIn';
 
 
 const App = () => {
@@ -19,6 +20,7 @@ const App = () => {
             <Route path="/booking/:id" element={<MovieBooking />} />
             <Route path="/RegistrationForm" element={<RegistrationForm />} />
             <Route path="/Moviepage" element={<Moviepage />} />
+            <Route path="/SignInform" element={<SignInform />} />
           </Routes>
           <Footer/>
         </div>

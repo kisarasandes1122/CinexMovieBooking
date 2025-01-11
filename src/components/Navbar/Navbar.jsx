@@ -18,8 +18,8 @@ const Navbar = () => {
           </div>
 
           <div className="auth-buttons">
-            <Link to="/Login">
-              <button className="login-button">LOGIN</button>
+            <Link to="/SignInform">
+              <button className="login-button">SIGN IN</button>
             </Link>
             <Link to="/RegistrationForm">
               <button className="signup-button">SIGN UP</button>
