@@ -71,7 +71,7 @@ const SignIn = () => {
                     {signInStatus === "error" && <p style={{ color: 'red' }}>Sign In Failed. Please try again.</p>}
 
                     <button type="submit">Sign in</button>
-                     {token && <p>Token: {token}</p> }
+                     
                 </form>
 
                 <div className="help-links">
