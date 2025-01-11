@@ -3,7 +3,46 @@ const Screen = require('../models/screenModel');
 const Seat = require('../models/seatModel');
 const ShowtimeSeats = require('../models/showtimeSeatsModel');
 const Movie = require('../models/movieModel'); // Import Movie model
-const { startOfDay, addDays, isBefore, isSameDay } = require('date-fns'); // Import date-fns
+const { startOfDay, endOfDay, isBefore, addDays, isSameDay } = require('date-fns');
+
+
+
+const getShowtimesByMovieTitleAndDate = async (req, res) => {
+    try {
+        const { title, date } = req.query; // Get title and date from query parameters
+       if(!title || !date){
+           return res.status(400).json({ message: 'Title and date are required' });
+       }
+
+       const parsedDate = new Date(date);
+
+        if (isNaN(parsedDate)) {
+            return res.status(400).json({ message: 'Invalid date format' });
+        }
+
+        const startDate = startOfDay(parsedDate);
+       
+
+        // Find the movie by title
+        const movie = await Movie.findOne({ title: { $regex: new RegExp(title, 'i') } });// Using regex for case-insensitive search
+        if (!movie) {
+            return res.status(404).json({ message: 'Movie not found' });
+        }
+
+        // Find showtimes matching the movie ID and date
+         const showtimes = await Showtime.find({
+            movieId: movie._id,
+            start_date: startDate
+        }).populate('movieId','title');  // Populate movie title
+
+
+        res.json(showtimes);
+
+
+    } catch (err) {
+        res.status(500).json({ message: "Error fetching showtimes", error: err.message });
+    }
+};
 
 const getAllShowtimes = async (req, res) => {
     try {
@@ -14,25 +53,6 @@ const getAllShowtimes = async (req, res) => {
         res.status(500).json({ message: "Error fetching showtimes", error: err.message })
     }
 }
-
-// New function to get showtimes by movie title
-const getShowtimesByMovieTitle = async (req, res) => {
-    try {
-      const { title } = req.params;
-        // Find the movie by title first
-        const movie = await Movie.findOne({ title: { $regex: new RegExp(`^${title}$`, 'i') } });
-
-        if (!movie) {
-           return res.status(404).json({ message: "Movie not found" });
-        }
-        // Find showtimes based on the movie ID
-      const showtimes = await Showtime.find({ movieId: movie._id });
-      res.json(showtimes);
-    } catch (err) {
-      res.status(500).json({ message: "Error fetching showtimes", error: err.message });
-    }
-};
-
 
 const createShowtime = async (req, res) => {
     const debugInfo = {
@@ -258,5 +278,5 @@ module.exports = {
     getShowtimeById,
     deleteShowtimeById,
     updateShowtimeById,
-    getShowtimesByMovieTitle // Export the new function
+    getShowtimesByMovieTitleAndDate // Export the new function
 };
