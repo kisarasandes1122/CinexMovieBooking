@@ -5,12 +5,12 @@ import '../MovieList/Movies.css'
 const movies = [
   {
     id: 1,
-    title: "Gladiator II",
+    title: " II",
     duration: "2h 30min",
     releaseDate: "14 Nov 2024",
     status: "Now Showing",
     description: "After his home is conquered by the tyrannical emperors who now lead Rome, Lucius is forced to enter the Colosseum and must look to his past to find strength to return the glory of Rome to its people.",
-    posterUrl: "https://mediafiles.cinema.com.hk/broadway/cmsimg/cinweb/movie/movie_1731300469.jpg" 
+    posterUrl: "https://static.toiimg.com/photo/90355881.cms" 
   },
   {
     id: 2,
