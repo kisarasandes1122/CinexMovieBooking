@@ -2,6 +2,7 @@ const Showtime = require('../models/showtimeModel');
 const Screen = require('../models/screenModel');
 const Seat = require('../models/seatModel');
 const ShowtimeSeats = require('../models/showtimeSeatsModel');
+const Movie = require('../models/movieModel'); // Import Movie model
 const { startOfDay, addDays, isBefore, isSameDay } = require('date-fns'); // Import date-fns
 
 const getAllShowtimes = async (req, res) => {
@@ -13,6 +14,25 @@ const getAllShowtimes = async (req, res) => {
         res.status(500).json({ message: "Error fetching showtimes", error: err.message })
     }
 }
+
+// New function to get showtimes by movie title
+const getShowtimesByMovieTitle = async (req, res) => {
+    try {
+      const { title } = req.params;
+        // Find the movie by title first
+        const movie = await Movie.findOne({ title: { $regex: new RegExp(`^${title}$`, 'i') } });
+
+        if (!movie) {
+           return res.status(404).json({ message: "Movie not found" });
+        }
+        // Find showtimes based on the movie ID
+      const showtimes = await Showtime.find({ movieId: movie._id });
+      res.json(showtimes);
+    } catch (err) {
+      res.status(500).json({ message: "Error fetching showtimes", error: err.message });
+    }
+};
+
 
 const createShowtime = async (req, res) => {
     const debugInfo = {
@@ -237,5 +257,6 @@ module.exports = {
     createShowtime,
     getShowtimeById,
     deleteShowtimeById,
-    updateShowtimeById
+    updateShowtimeById,
+    getShowtimesByMovieTitle // Export the new function
 };
