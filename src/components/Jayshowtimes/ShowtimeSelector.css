@@ -1,0 +1,96 @@
+.showtime-selector {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  margin: 0 auto;
+  margin-bottom: 3rem;
+  align-items: flex-start;
+  width: 70%; 
+  text-align: left;
+  color: #ffffff;
+}
+
+
+.showtime-selector h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.date-selector {
+  display: flex;
+  justify-content: center; 
+  align-items: center; 
+  gap: 1rem; 
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+}
+
+.date-button,
+.time-button {
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  text-align: center; 
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  min-width: 120px;
+  background: var(--button-gray);
+  color: var(--text-primary);
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.date-button.selected,
+.time-button.selected {
+  background: var(--accent-red);
+  transform: scale(1.05); 
+}
+
+
+.time-button:hover {
+  background: var(--accent-red);
+}
+
+.theaters {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.theater h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.format {
+  margin-bottom: 1.5rem;
+}
+
+.format h4 {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.times {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+
+@media (max-width: 768px) {
+  .showtime-selector {
+    align-items: center; 
+  }
+
+  .date-selector {
+    justify-content: center; 
+    gap: 0.5rem; 
+  }
+
+  .date-button {
+    min-width: 100px; 
+    padding: 0.5rem 1rem; 
+  }
+}
