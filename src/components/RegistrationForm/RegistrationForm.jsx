@@ -11,10 +11,45 @@ const RegistrationForm = () => {
     receiveOffers: false,
     agreeToTerms: false
   });
+  const [registrationStatus, setRegistrationStatus] = useState(null); // State for registration status
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Form submitted:', formData);
+  const handleSubmit = async (e) => {
+      e.preventDefault();
+      setRegistrationStatus("submitting") //Set submit status
+      
+    try {
+        const response = await fetch('http://localhost:27017/api/auth/register', {  // Replace '/api/auth/register' with your actual backend endpoint
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+
+        if (response.ok) {
+          setRegistrationStatus('success');
+          const data = await response.json();
+          console.log('Registration successful', data);
+           // Optionally, clear the form here if needed
+        setFormData({
+              email: '',
+              password: '',
+              firstName: '',
+              lastName: '',
+              mobile: '',
+              receiveOffers: false,
+              agreeToTerms: false
+        });
+
+        } else {
+             setRegistrationStatus('error');
+          const errorData = await response.json();
+            console.error('Registration failed:', errorData.message || "Unknown error");
+        }
+    } catch (error) {
+      setRegistrationStatus('error');
+        console.error('Error during registration:', error);
+    }
   };
 
   const handleChange = (e) => {
@@ -96,7 +131,11 @@ const RegistrationForm = () => {
             Have read and agree to the terms and conditions
           </label>
         </div>
-        
+       
+         {registrationStatus === "submitting" && <p>Submitting the form....</p>}
+          {registrationStatus === "success" && <p style={{color: 'green'}}>Registration Successfull!</p>}
+         {registrationStatus === "error" && <p style={{color: 'red'}}>Registration Failed. Please try again.</p>}
+
         <button type="submit" className="submit-btn">Sign Up</button>
       </form>
     </div>
