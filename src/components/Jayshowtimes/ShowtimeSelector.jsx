@@ -183,7 +183,7 @@ const ShowtimeSelector = () => {
     };
 
     const handleTimeClick = (showtime) => {
-        window.location.href = `/booking?showtimeId=${showtime._id}&movieTitle=${showtime.movieId.title}`;
+        window.location.href = `/SeatSelection?showtimeId=${showtime._id}&movieTitle=${showtime.movieId.title}`;
     };
 
     if (loading) {
