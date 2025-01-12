@@ -75,7 +75,7 @@ const Homenowshowing = () => {
   };
 
     const handleShowAllClick = () => {
-        navigate('/all-movies'); // Navigate to the new page
+        navigate('/Moviepage'); // Navigate to the new page
     };
 
 
