@@ -58,12 +58,12 @@ const AdminDash = () => {
                     onClick={() => handleNavigation('/add-showtime')}
                   />
                   <Button
-                    label="Add Movie"
-                    onClick={() => handleNavigation('/add-movie')}
+                    label="Add Movies"
+                    onClick={() => handleNavigation('/MMHeader')}
                   />
                   <Button
                     label="Add Theatre"
-                    onClick={() => handleNavigation('/add-theatre')}
+                    onClick={() => handleNavigation('/TheatreManage')}
                   />
                 </div>
               </section>

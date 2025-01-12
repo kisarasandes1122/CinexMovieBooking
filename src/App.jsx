@@ -15,6 +15,7 @@ import Moviemanagement from './Pages/Moviemanagement';
 import TheatreManage from './components/TheatreManage/TheatreManage';
 import AdminDash from './components/AdminDashboard/AdminDash';
 import Payments from './components/PaymentSection/Payments';
+import MMHeader from './components/MMHeader/MMHeader';
 
 const App = () => {
   return (
@@ -36,6 +37,7 @@ const App = () => {
             <Route path="/TheatreManage" element={<TheatreManage/>}/>
             <Route path="/payment" element={<Payments/>}/>
             <Route path="/Contactus" element={<ContactUS/>}/>
+            <Route path="/MMHeader" element={<MMHeader />} />
           </Routes>
           <Footer/>
         </div>
