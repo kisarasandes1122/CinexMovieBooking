@@ -7,8 +7,11 @@ import Footer from './components/Footer/Footer';
 import RegistrationForm from './components/RegistrationForm/RegistrationForm';
 import Moviepage from './Pages/MoviePage';
 import SignInform from './components/SignInform/SignIn';
-import Admin from './components/Admin/AdminSignIn';
 import SeatSelection from './components/MovieSelectionPage/SeatSelection';
+import Header from './components/Yokis/Header';
+import AdminDash from './Pages/AdminDash';
+import AdminSignIn from './Pages/AdminSignIn';
+
 
 
 const App = () => {
@@ -23,8 +26,10 @@ const App = () => {
             <Route path="/RegistrationForm" element={<RegistrationForm />} />
             <Route path="/Moviepage" element={<Moviepage />} />
             <Route path="/SignInform" element={<SignInform />} />
-            <Route path="/Admin" element={<Admin />} />
             <Route path="/SeatSelection" element={<SeatSelection/>}/>
+            <Route path="/Header" element={<Header />} />
+            <Route path="/AdminDash" element={<AdminDash />}/>
+            <Route path="/AdminSignIn" element={<AdminSignIn />}/>
           </Routes>
           <Footer/>
         </div>

@@ -1,11 +1,14 @@
 import React, { useState } from "react";
-import './css/AdminSignIn.css';
+import { useNavigate } from "react-router-dom"; // Import useNavigate
+import '../css/AdminSignIn.css';
 
 const SignIn = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [signInStatus, setSignInStatus] = useState(null); // State for login status
-    const [token, setToken] = useState(null); // State to store the token
+    const [signInStatus, setSignInStatus] = useState(null);
+    const [token, setToken] = useState(null);
+
+    const navigate = useNavigate(); // Initialize navigate
 
     // Hardcoded admin credentials
     const ADMIN_EMAIL = "admin@cinex.com";
@@ -13,49 +16,59 @@ const SignIn = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setSignInStatus("submitting"); // Set login status
+        setSignInStatus("submitting");
 
         // Check if the user is an admin
         if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
             setSignInStatus("success");
             console.log("Admin logged in successfully");
-            // Set a dummy token for admin
             setToken("admin-token-123");
             setEmail("");
             setPassword("");
-            return; // Skip further API request for admin login
+
+            // Navigate to Admin Dashboard
+            navigate("/AdminDash");
+            return;
         }
 
         try {
-            const response = await fetch('http://localhost:27017/api/auth/login', {
-                method: 'POST',
+            const response = await fetch("http://localhost:27017/api/auth/login", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify({ email, password }),
             });
 
             if (response.ok) {
-                setSignInStatus("success"); // Set sign-in status to success
                 const data = await response.json();
-                console.log("Logged in successfully", data);
-                setToken(data.token); // Set token to state variable
-                // Clear the form
-                setEmail("");
-                setPassword("");
-                // Optional: Redirect user here
+
+                if (data.role === "admin") {
+                    setSignInStatus("success");
+                    console.log("Admin logged in successfully via backend", data);
+                    setToken(data.token);
+                    setEmail("");
+                    setPassword("");
+
+                    // Navigate to Admin Dashboard
+                    navigate("/admin-dashboard");
+                } else {
+                    setSignInStatus("error");
+                    console.error("Access Denied: User is not an admin");
+                    alert("You are not authorized to access the admin dashboard.");
+                }
             } else {
-                setSignInStatus('error');
+                setSignInStatus("error");
                 try {
                     const errorData = await response.json();
-                    console.error('Sign In failed:', errorData.message || "Unknown error");
+                    console.error("Sign In failed:", errorData.message || "Unknown error");
                 } catch (err) {
                     console.error("Sign In Failed:", err);
                 }
             }
         } catch (error) {
-            setSignInStatus('error');
-            console.error('Error during sign in:', error);
+            setSignInStatus("error");
+            console.error("Error during sign in:", error);
         }
     };
 
@@ -80,8 +93,12 @@ const SignIn = () => {
                         required
                     />
                     {signInStatus === "submitting" && <p>Submitting the form....</p>}
-                    {signInStatus === "success" && <p style={{ color: 'green' }}>Logged in Successfully</p>}
-                    {signInStatus === "error" && <p style={{ color: 'red' }}>Sign In Failed. Please try again.</p>}
+                    {signInStatus === "success" && (
+                        <p style={{ color: "green" }}>Logged in Successfully</p>
+                    )}
+                    {signInStatus === "error" && (
+                        <p style={{ color: "red" }}>Sign In Failed. Please try again.</p>
+                    )}
 
                     <button type="submit">Sign in</button>
                 </form>
