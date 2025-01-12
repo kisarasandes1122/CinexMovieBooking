@@ -6,13 +6,14 @@ import MovieBooking from './Pages/MovieBooking'; // Import the MovieBooking comp
 import Footer from './components/Footer/Footer';
 import RegistrationForm from './components/RegistrationForm/RegistrationForm';
 import Moviepage from './Pages/MoviePage';
-import SignInform from './components/SignInform/SignIn';
 import SeatSelection from './components/MovieSelectionPage/SeatSelection';
-import Header from './components/Yokis/Header';
-import AdminDash from './Pages/AdminDash';
-import AdminSignIn from './Pages/AdminSignIn';
-import Moviemanagement from './Pages/Moviemanagement';
+import SignIn from './components/Signinform/Signin';
 import TheatreManage from './components/TheatreManage/TheatreManage';
+import AdminDash from './components/AdminDashboard/AdminDash';
+import Moviemanagement from './Pages/Moviemanagement';
+import AdminSignIn from './Pages/AdminSignIn'
+
+
 
 
 const App = () => {
@@ -23,16 +24,15 @@ const App = () => {
           <Navbar />
           <Routes>
             <Route path="/" element={<Home1 />} />
-            <Route path="/booking/:id" element={<MovieBooking />} />
+            <Route path="/booking" element={<MovieBooking />} /> {/* Add this route */}
             <Route path="/RegistrationForm" element={<RegistrationForm />} />
+            <Route path="/SignIn" element={<SignIn/>} />
             <Route path="/Moviepage" element={<Moviepage />} />
-            <Route path="/SignInform" element={<SignInform />} />
             <Route path="/SeatSelection" element={<SeatSelection/>}/>
-            <Route path="/Header" element={<Header />} />
-            <Route path="/AdminDash" element={<AdminDash />}/>
-            <Route path="/AdminSignIn" element={<AdminSignIn />}/>
-            <Route path="/Moviemanagement" element={<Moviemanagement />} />
+            <Route path="/AdminDashBoard" element={<AdminDash/>}/>
             <Route path="/TheatreManage" element={<TheatreManage/>}/>
+            <Route path="/Moviemanagement" element={<Moviemanagement/>} />
+            <Route path="/AdminSignIn" element={<AdminSignIn />} />
           </Routes>
           <Footer/>
         </div>

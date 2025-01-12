@@ -27,7 +27,7 @@ const SignIn = () => {
             setPassword("");
 
             // Navigate to Admin Dashboard
-            navigate("/AdminDash");
+            navigate("/AdminDashboard");
             return;
         }
 
