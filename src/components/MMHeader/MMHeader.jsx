@@ -1,9 +1,28 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
+import Select from 'react-select';
 import './MMHeader.css';
 
 const MMHeader = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedGenres, setSelectedGenres] = useState([]);
+
+  const genreOptions = [
+    { value: 'action', label: 'Action' },
+    { value: 'animation', label: 'Animation' },
+    { value: 'comedy', label: 'Comedy' },
+    { value: 'crime', label: 'Crime' },
+    { value: 'drama', label: 'Drama' },
+    { value: 'fantasy', label: 'Fantasy' },
+    { value: 'horror', label: 'Horror' },
+    { value: 'romance', label: 'Romance' },
+    { value: 'sci-fi', label: 'Science Fiction' },
+    { value: 'thriller', label: 'Thriller' },
+  ];
+
+  const handleGenreChange = (selectedOptions) => {
+    setSelectedGenres(selectedOptions || []);
+  };
 
   const handleAddMovie = () => {
     setIsModalOpen(true);
@@ -17,7 +36,9 @@ const MMHeader = () => {
     <div className="movie-management-container">
       <div className="movie-management-header">
         <h2>Movie Management</h2>
-        <button className="add-movie-btn" onClick={handleAddMovie}>Add Movie</button>
+        <button className="add-movie-btn" onClick={handleAddMovie}>
+          Add Movie
+        </button>
       </div>
       <div className="search-bar-container">
         <input
@@ -47,42 +68,37 @@ const MMHeader = () => {
 
               <div className="form-2lane">
                 <div>
-                    <label>Director</label>
-                    <input type="text" placeholder="Enter director" />
+                  <label>Director</label>
+                  <input type="text" placeholder="Enter director" />
                 </div>
                 <div>
-                    <label>Release Date</label>
-                    <input type="date" />
+                  <label>Release Date</label>
+                  <input type="date" />
                 </div>
                 <div>
-                    <label>Duration</label>
-                    <input type="text" placeholder="Enter duration" />
+                  <label>Duration</label>
+                  <input type="text" placeholder="Enter duration" />
                 </div>
                 <div>
-                    <label>Rating</label>
-                    <input type="text" placeholder="Enter rating" />
+                  <label>Rating</label>
+                  <input type="text" placeholder="Enter rating" />
                 </div>
                 <div>
-                    <label>Genres</label>
-                    <select multiple={true} placeholder="Select genres">
-                    <option value="action">Action</option>
-                    <option value="action">Animation</option>
-                    <option value="comedy">Comedy</option>
-                    <option value="comedy">Crime</option>
-                    <option value="drama">Drama</option>
-                    <option value="fantasy">Fantasy</option>
-                    <option value="horror">Horror</option>
-                    <option value="romance">Romance</option>
-                    <option value="sci-fi">Science Fiction</option>
-                    <option value="thriller">Thriller</option>
-                    </select>
+                  <label>Genres</label>
+                  <Select
+                    isMulti
+                    options={genreOptions}
+                    value={selectedGenres}
+                    onChange={handleGenreChange}
+                    placeholder="Select genres"
+                  />
                 </div>
                 <div>
-                    <label>IMDB Ratings (Out of 5)</label>
-                    <input type="text" placeholder="Enter IMDB rating" />
+                  <label>IMDB Ratings (Out of 5)</label>
+                  <input type="text" placeholder="Enter IMDB rating" />
                 </div>
               </div>
-              
+
               <div>
                 <label>Trailer URL</label>
                 <input type="text" placeholder="Enter trailer URL" />
@@ -96,8 +112,16 @@ const MMHeader = () => {
                 <input type="text" placeholder="Enter homepage poster URL" />
               </div>
               <div className="modal-actions">
-                <button type="button" className="cancel-btn" onClick={handleCloseModal}>Cancel</button>
-                <button type="submit" className="save-btn">Save</button>
+                <button
+                  type="button"
+                  className="cancel-btn"
+                  onClick={handleCloseModal}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="save-btn">
+                  Save
+                </button>
               </div>
             </form>
           </div>
