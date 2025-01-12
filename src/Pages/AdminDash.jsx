@@ -17,7 +17,7 @@ const AdminDash = () => {
         navigate('/Moviemanagement');
         break;
       case 'add-theatre':
-        navigate('Add Theatre clicked');
+        navigate('/TheatreManage');
         break;
       case 'list-showtimes':
         navigate('List Showtimes clicked');

@@ -12,7 +12,7 @@ import Header from './components/Yokis/Header';
 import AdminDash from './Pages/AdminDash';
 import AdminSignIn from './Pages/AdminSignIn';
 import Moviemanagement from './Pages/Moviemanagement';
-
+import TheatreManage from './components/TheatreManage/TheatreManage';
 
 
 const App = () => {
@@ -32,6 +32,7 @@ const App = () => {
             <Route path="/AdminDash" element={<AdminDash />}/>
             <Route path="/AdminSignIn" element={<AdminSignIn />}/>
             <Route path="/Moviemanagement" element={<Moviemanagement />} />
+            <Route path="/TheatreManage" element={<TheatreManage/>}/>
           </Routes>
           <Footer/>
         </div>
