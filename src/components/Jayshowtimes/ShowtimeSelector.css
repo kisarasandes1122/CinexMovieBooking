@@ -14,7 +14,7 @@
 
 .showtime-selector h2 {
   font-size: 1.5rem;
-  margin-bottom: 1.5rem;
+  margin: 2rem 0rem;
 }
 
 /* Movie Details Section */
@@ -22,6 +22,7 @@
   display: flex;
   gap: 3rem;
   align-items: flex-start;
+  margin: auto;
 }
 
 .movie-poster {
