@@ -14,7 +14,7 @@ const Navbar = () => {
             <NavLink href="/">Home</NavLink>
             <NavLink href="/Moviepage">Movies</NavLink>
             <NavLink href="/offers">Offers & Promotions</NavLink>
-            <NavLink href="/contact">Contact Us</NavLink>
+            <NavLink href="/Contactus">Contact Us</NavLink>
           </div>
 
           <div className="auth-buttons">

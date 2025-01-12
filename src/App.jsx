@@ -10,6 +10,7 @@ import SignInform from './components/SignInform/SignIn';
 import SeatSelection from './components/MovieSelectionPage/SeatSelection';
 import Header from './components/Yokis/Header';
 import AdminSignIn from './Pages/AdminSignIn';
+import ContactUS from './components/ContactUS/Contactus';
 import Moviemanagement from './Pages/Moviemanagement';
 import TheatreManage from './components/TheatreManage/TheatreManage';
 import AdminDash from './components/AdminDashboard/AdminDash';
@@ -34,6 +35,7 @@ const App = () => {
             <Route path="/Moviemanagement" element={<Moviemanagement />} />
             <Route path="/TheatreManage" element={<TheatreManage/>}/>
             <Route path="/payment" element={<Payments/>}/>
+            <Route path="/Contactus" element={<ContactUS/>}/>
           </Routes>
           <Footer/>
         </div>
