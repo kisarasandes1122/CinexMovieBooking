@@ -6,15 +6,14 @@ import MovieBooking from './Pages/MovieBooking'; // Import the MovieBooking comp
 import Footer from './components/Footer/Footer';
 import RegistrationForm from './components/RegistrationForm/RegistrationForm';
 import Moviepage from './Pages/MoviePage';
+import SignInform from './components/SignInform/SignIn';
 import SeatSelection from './components/MovieSelectionPage/SeatSelection';
-import SignIn from './components/Signinform/Signin';
+import Header from './components/Yokis/Header';
+import AdminSignIn from './Pages/AdminSignIn';
+import Moviemanagement from './Pages/Moviemanagement';
 import TheatreManage from './components/TheatreManage/TheatreManage';
 import AdminDash from './components/AdminDashboard/AdminDash';
-import Moviemanagement from './Pages/Moviemanagement';
-import AdminSignIn from './Pages/AdminSignIn'
-
-
-
+import Payments from './components/PaymentSection/Payments';
 
 const App = () => {
   return (
@@ -24,15 +23,17 @@ const App = () => {
           <Navbar />
           <Routes>
             <Route path="/" element={<Home1 />} />
-            <Route path="/booking" element={<MovieBooking />} /> {/* Add this route */}
+            <Route path="/booking/:id" element={<MovieBooking />} />
             <Route path="/RegistrationForm" element={<RegistrationForm />} />
-            <Route path="/SignIn" element={<SignIn/>} />
             <Route path="/Moviepage" element={<Moviepage />} />
+            <Route path="/SignInform" element={<SignInform />} />
             <Route path="/SeatSelection" element={<SeatSelection/>}/>
-            <Route path="/AdminDashBoard" element={<AdminDash/>}/>
+            <Route path="/Header" element={<Header />} />
+            <Route path="/AdminDashboard" element={<AdminDash />}/>
+            <Route path="/AdminSignIn" element={<AdminSignIn />}/>
+            <Route path="/Moviemanagement" element={<Moviemanagement />} />
             <Route path="/TheatreManage" element={<TheatreManage/>}/>
-            <Route path="/Moviemanagement" element={<Moviemanagement/>} />
-            <Route path="/AdminSignIn" element={<AdminSignIn />} />
+            <Route path="/payment" element={<Payments/>}/>
           </Routes>
           <Footer/>
         </div>
