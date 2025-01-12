@@ -6,7 +6,6 @@ const Movie = require('../models/movieModel'); // Import Movie model
 const { startOfDay, endOfDay, isBefore, addDays, isSameDay } = require('date-fns');
 
 
-
 const getShowtimesByMovieTitleAndDate = async (req, res) => {
     try {
       const { title, date } = req.query;
@@ -44,7 +43,7 @@ const getShowtimesByMovieTitleAndDate = async (req, res) => {
     }
  };
 
- 
+
 const createShowtime = async (req, res) => {
     const debugInfo = {
         stage: "initial",
@@ -212,7 +211,36 @@ const createShowtime = async (req, res) => {
   }
 };
 
+//New controller method to get showtime seats by showtimeId
+const getShowtimeSeatsByShowtimeId = async (req, res) => {
+    try {
+        const { showtimeId } = req.params;
 
+        const showtimeSeats = await ShowtimeSeats.find({ showtimeId: showtimeId })
+                                                  .populate({
+                                                      path: 'seatId',
+                                                      model: 'Seats',
+                                                      select: 'seatNumber'
+                                                  })
+                                                   .lean();
+                                                  
+
+        if (!showtimeSeats || showtimeSeats.length === 0) {
+            return res.status(404).json({ message: 'No seats found for this showtime' });
+        }
+       const formattedSeats = showtimeSeats.map(showtimeSeat => ({
+            _id: showtimeSeat._id,
+           seatNumber: showtimeSeat.seatId.seatNumber,
+          status: showtimeSeat.status
+         }));
+
+
+        res.json(formattedSeats);
+
+    } catch (err) {
+        res.status(500).json({ message: "Error fetching showtime seats", error: err.message });
+    }
+};
 
 //Get a showtime by id.
 const getShowtimeById = async (req, res) => {
@@ -264,10 +292,10 @@ const updateShowtimeById = async (req, res) => {
 
 
 module.exports = {
-    getAllShowtimes,
+  getShowtimesByMovieTitleAndDate,
     createShowtime,
     getShowtimeById,
     deleteShowtimeById,
     updateShowtimeById,
-    getShowtimesByMovieTitleAndDate // Export the new function
+    getShowtimeSeatsByShowtimeId, // Export the new function
 };

@@ -1,17 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const {
-    getAllShowtimes,
+  getShowtimesByMovieTitleAndDate,
     createShowtime,
     getShowtimeById,
     deleteShowtimeById,
     updateShowtimeById,
-    getShowtimesByMovieTitleAndDate // Import the new controller
+    getShowtimeSeatsByShowtimeId // Import the new controller
 } = require('../controllers/showtimeController');
 
-
-// Get all showtimes
-router.get('/', getAllShowtimes);
 
 //Get showtime by movie title and date
 router.get('/search', getShowtimesByMovieTitleAndDate);
@@ -25,5 +22,8 @@ router.delete('/:id', deleteShowtimeById)
 // update a showtime by ID.
 router.put('/:id', updateShowtimeById)
 
+
+// Get showtime seats by showtime ID
+router.get('/:showtimeId/seats', getShowtimeSeatsByShowtimeId); //New route
 
 module.exports = router;

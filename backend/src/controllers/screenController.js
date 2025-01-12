@@ -34,6 +34,22 @@ const getScreens = async (req, res) => {
 };
 
 
+// Get a screen by ID
+const getScreenById = async (req, res) => {
+  try {
+      const screen = await Screen.findById(req.params.id);
+      if(!screen){
+          return res.status(404).json({message: 'Cannot find screen'})
+      }
+      res.json(screen)
+  }
+  catch(err){
+      return res.status(500).json({message: err.message})
+  }
+}
+
+
+
 function generateSeats(screenId, rowCount, seatPerRow) {
  const seats = [];
    for (let row_num = 0; row_num < rowCount; row_num++) {
@@ -53,4 +69,5 @@ function generateSeats(screenId, rowCount, seatPerRow) {
 module.exports = {
   createScreen,
   getScreens, // Export the new controller
+  getScreenById
 };

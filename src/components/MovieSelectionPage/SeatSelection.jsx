@@ -1,88 +1,183 @@
-import React, { useState, useMemo } from "react";
-import { useLocation } from "react-router-dom";
-import "./SeatSelection.css"; 
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import "./SeatSelection.css";
+import { format } from 'date-fns';
 
 const SeatSelection = () => {
-  const [selectedSeats, setSelectedSeats] = useState([]);
+    const [selectedSeats, setSelectedSeats] = useState([]);
+    const [seats, setSeats] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [showtime, setShowtime] = useState(null);
+    const [theatreLocation, setTheatreLocation] = useState("");
+    const [screenFormat, setScreenFormat] = useState("");
 
-  // Extract query parameters from the URL
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const selectedDate = queryParams.get("date");
-  const selectedTime = queryParams.get("time");
 
-  const rows = useMemo(() => ["H", "G", "F", "E", "D", "C", "B", "A"], []);
-  const columns = useMemo(() => Array.from({ length: 14 }, (_, i) => i + 1), []);
+    // Get URL parameters
+    const queryParams = new URLSearchParams(window.location.search);
+    const showtimeId = queryParams.get("showtimeId");
+    const movieTitle = queryParams.get("movieTitle");
 
-  const bookedSeats = useMemo(() => ["H3", "H4", "G5", "F6", "E7"], []); // Example booked seats
-  const ticketPrice = 1000; // Assume ticket price is Rs. 1000
+    const API_BASE_URL = 'http://localhost:27017/api';
 
-  const toggleSeatSelection = (seat) => {
-    setSelectedSeats((prev) =>
-      prev.includes(seat)
-        ? prev.filter((s) => s !== seat)
-        : [...prev, seat]
-    );
-  };
+    useEffect(() => {
+        const fetchSeatAndShowtimeData = async () => {
+            try {
+                setLoading(true);
 
-  const isSeatBooked = (seat) => bookedSeats.includes(seat);
+                // Fetch Showtime data
+                const showtimeResponse = await fetch(`${API_BASE_URL}/showtimes/${showtimeId}`);
+                if (!showtimeResponse.ok) {
+                    throw new Error(`HTTP error! status: ${showtimeResponse.status} fetching showtime`);
+                }
+                const showtimeData = await showtimeResponse.json();
+                setShowtime(showtimeData);
 
-  const calculatePrice = useMemo(() => selectedSeats.length * ticketPrice, [selectedSeats, ticketPrice]);
 
-  const handleSeatClick = (seat) => {
-    if (!isSeatBooked(seat)) {
-      toggleSeatSelection(seat);
+                // Fetch screen and theatre info
+                const screenResponse = await fetch(`${API_BASE_URL}/screens/${showtimeData.screenId}`);
+                if (!screenResponse.ok) {
+                    throw new Error(`HTTP error! status: ${screenResponse.status} fetching screen`);
+                }
+                const screenData = await screenResponse.json();
+                setScreenFormat(screenData.format || "Standard");
+
+                const theatreResponse = await fetch(`${API_BASE_URL}/theatres/${screenData.theatreId}`);
+                if (!theatreResponse.ok) {
+                    throw new Error(`HTTP error! status: ${theatreResponse.status} fetching theatre`);
+                }
+                const theatreData = await theatreResponse.json();
+                setTheatreLocation(theatreData.location);
+
+
+
+
+                const response = await fetch(`${API_BASE_URL}/showtimes/${showtimeId}/seats`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status} fetching seats`);
+                }
+                const data = await response.json();
+
+                // Group seats by row
+                const groupedSeats = data.reduce((acc, seat) => {
+                    const row = seat.seatNumber.charAt(0);
+                    if (!acc[row]) {
+                        acc[row] = [];
+                    }
+                    acc[row].push({
+                        id: seat._id,
+                        number: seat.seatNumber,
+                        status: seat.status
+                    });
+                    return acc;
+                }, {});
+
+                setSeats(groupedSeats);
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (showtimeId) {
+            fetchSeatAndShowtimeData();
+        }
+    }, [showtimeId]);
+
+    const rows = Object.keys(seats).sort().reverse();
+
+    const handleSeatClick = (seatId, seatNumber, status) => {
+        if (status === 'booked') return;
+
+        setSelectedSeats((prev) =>
+            prev.find(seat => seat.id === seatId)
+                ? prev.filter(seat => seat.id !== seatId)
+                : [...prev, { id: seatId, number: seatNumber }]
+        );
+    };
+
+    const calculatePrice = showtime ? selectedSeats.length * showtime.seatPrice : 0;
+
+     // Format date and time
+    const formattedShowtimeDate = showtime ? format(new Date(showtime.start_date), 'dd MMM yyyy') : 'Date Loading';
+     const formattedShowtimeTime = showtime ? showtime.start_time : 'Time Loading';
+
+    const handleContinue = async () => {
+        // TODO: Implement booking logic
+        console.log('Selected seats for booking:', selectedSeats);
+    };
+
+    const handleBack = () => {
+        window.history.back();
+    };
+
+    if (loading) {
+        return <div className="seat-selection" style={{ color: '#ffffff' }}>Loading seats...</div>;
     }
-  };
 
-  return (
-    <div className="seat-selection">
-      <div className="header-ss">
-        <h1>Spider-Man: Far from Home</h1>
-        <p>
-          CINEX - Bambalapitiya | Date: {selectedDate || "Not Selected"} | Time: {selectedTime || "Not Selected"}
-        </p>
-      </div>
+    if (error) {
+        return <div className="seat-selection" style={{ color: '#e63946' }}>Error: {error}</div>;
+    }
 
-      <div className="screen">SCREEN</div>
+    return (
+        <div className="seat-selection">
+            <div className="header-ss">
+                <h1>{movieTitle}</h1>
+                <p>
+                   {theatreLocation || "Location Loading"} | {screenFormat || "Format Loading"} | {formattedShowtimeDate} | {formattedShowtimeTime}
+                </p>
+            </div>
 
-      <div className="seating">
-        {rows.map((row) => (
-          <div key={row} className="row">
-            {columns.map((col) => {
-              const seat = `${row}${col}`;
-              return (
-                <div
-                  key={seat}
-                  className={`seat ${
-                    isSeatBooked(seat)
-                      ? "booked"
-                      : selectedSeats.includes(seat)
-                      ? "selected"
-                      : "available"
-                  }`}
-                  onClick={() => handleSeatClick(seat)}
+            <div className="screen">SCREEN THIS WAY</div>
+
+            <div className="seating">
+                {rows.map((row) => (
+                    <div key={row} className="row">
+                        {seats[row].map((seat) => {
+                            const seatClass = `seat ${
+                                seat.status === 'booked'
+                                    ? "booked"
+                                    : selectedSeats.find(s => s.id === seat.id)
+                                        ? "selected"
+                                        : "available"
+                                }`;
+
+                            return (
+                                <div
+                                    key={seat.id}
+                                    className={seatClass}
+                                    onClick={() => handleSeatClick(seat.id, seat.number, seat.status)}
+                                >
+                                    {seat.number}
+                                </div>
+                            );
+                        })}
+                    </div>
+                ))}
+            </div>
+
+            <div className="summary">
+                <p>Selected Seats: {selectedSeats.map(seat => seat.number).join(", ") || "None"}</p>
+                <p>Total Tickets: {selectedSeats.length}</p>
+                <p>Total Price: Rs. {calculatePrice}</p>
+            </div>
+
+            <div className="actions">
+                <button
+                    className="continue"
+                    onClick={handleContinue}
+                    disabled={selectedSeats.length === 0}
+                    style={{ opacity: selectedSeats.length === 0 ? 0.5 : 1 }}
                 >
-                  {col}
-                </div>
-              );
-            })}
-          </div>
-        ))}
-      </div>
-
-      <div className="summary">
-        <p>Selected Seats: {selectedSeats.join(", ") || "None"}</p>
-        <p>Total Tickets: {selectedSeats.length}</p>
-        <p>Total Price: Rs. {calculatePrice}</p>
-      </div>
-
-      <div className="actions">
-        <button className="continue">Continue</button>
-        <button className="back">Back</button>
-      </div>
-    </div>
-  );
+                    Continue
+                </button>
+                <button className="back" onClick={handleBack}>
+                    Back
+                </button>
+            </div>
+        </div>
+    );
 };
 
 export default SeatSelection;
