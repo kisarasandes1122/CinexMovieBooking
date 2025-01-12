@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import './SignIn.css';
+import './css/AdminSignIn.css';
 
 const SignIn = () => {
     const [email, setEmail] = useState("");
@@ -7,9 +7,24 @@ const SignIn = () => {
     const [signInStatus, setSignInStatus] = useState(null); // State for login status
     const [token, setToken] = useState(null); // State to store the token
 
+    // Hardcoded admin credentials
+    const ADMIN_EMAIL = "admin@cinex.com";
+    const ADMIN_PASSWORD = "Admin@123";
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setSignInStatus("submitting") //Set login status
+        setSignInStatus("submitting"); // Set login status
+
+        // Check if the user is an admin
+        if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+            setSignInStatus("success");
+            console.log("Admin logged in successfully");
+            // Set a dummy token for admin
+            setToken("admin-token-123");
+            setEmail("");
+            setPassword("");
+            return; // Skip further API request for admin login
+        }
 
         try {
             const response = await fetch('http://localhost:27017/api/auth/login', {
@@ -21,23 +36,21 @@ const SignIn = () => {
             });
 
             if (response.ok) {
-               setSignInStatus("success") //set sign in status to success
-                 const data = await response.json();
-                console.log("Logged in Successfully", data);
-                 setToken(data.token)  //set token to state variable
-               // Clear the form
-                   setEmail("");
-                  setPassword("");
+                setSignInStatus("success"); // Set sign-in status to success
+                const data = await response.json();
+                console.log("Logged in successfully", data);
+                setToken(data.token); // Set token to state variable
+                // Clear the form
+                setEmail("");
+                setPassword("");
                 // Optional: Redirect user here
-            }
-            else {
+            } else {
                 setSignInStatus('error');
-                try{
-                     const errorData = await response.json();
+                try {
+                    const errorData = await response.json();
                     console.error('Sign In failed:', errorData.message || "Unknown error");
-                }
-              catch(err) {
-                    console.error("Sign In Failed:", err)
+                } catch (err) {
+                    console.error("Sign In Failed:", err);
                 }
             }
         } catch (error) {
@@ -71,7 +84,6 @@ const SignIn = () => {
                     {signInStatus === "error" && <p style={{ color: 'red' }}>Sign In Failed. Please try again.</p>}
 
                     <button type="submit">Sign in</button>
-                     
                 </form>
 
                 <div className="help-links">
