@@ -64,18 +64,7 @@ const MMHeader = () => {
                 </div>
                 <div>
                     <label>Genres</label>
-                    <select multiple={true} placeholder="Select genres">
-                    <option value="action">Action</option>
-                    <option value="action">Animation</option>
-                    <option value="comedy">Comedy</option>
-                    <option value="comedy">Crime</option>
-                    <option value="drama">Drama</option>
-                    <option value="fantasy">Fantasy</option>
-                    <option value="horror">Horror</option>
-                    <option value="romance">Romance</option>
-                    <option value="sci-fi">Science Fiction</option>
-                    <option value="thriller">Thriller</option>
-                    </select>
+                    <input type="text" placeholder="Enter genres" />
                 </div>
                 <div>
                     <label>IMDB Ratings (Out of 5)</label>

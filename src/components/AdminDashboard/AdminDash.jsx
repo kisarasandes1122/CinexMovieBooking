@@ -55,7 +55,7 @@ const AdminDash = () => {
                 <div className="actions-grid">
                   <Button
                     label="Add Showtime"
-                    onClick={() => handleNavigation('/add-showtime')}
+                    onClick={() => handleNavigation('/showtimeMG')}
                   />
                   <Button
                     label="Add Movies"

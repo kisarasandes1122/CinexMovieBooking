@@ -16,6 +16,7 @@ import TheatreManage from './components/TheatreManage/TheatreManage';
 import AdminDash from './components/AdminDashboard/AdminDash';
 import Payments from './components/PaymentSection/Payments';
 import MMHeader from './components/MMHeader/MMHeader';
+import ShowtimeManagement from './Pages/showtimeMG';
 
 const App = () => {
   return (
@@ -38,6 +39,7 @@ const App = () => {
             <Route path="/payment" element={<Payments/>}/>
             <Route path="/Contactus" element={<ContactUS/>}/>
             <Route path="/MMHeader" element={<MMHeader />} />
+            <Route path="/showtimemgr" element={<ShowtimeManagement/>}/>
           </Routes>
           <Footer/>
         </div>
