@@ -11,6 +11,7 @@ import SeatSelection from './components/MovieSelectionPage/SeatSelection';
 import Header from './components/Yokis/Header';
 import AdminDash from './Pages/AdminDash';
 import AdminSignIn from './Pages/AdminSignIn';
+import Moviemanagement from './Pages/Moviemanagement';
 
 
 
@@ -30,6 +31,7 @@ const App = () => {
             <Route path="/Header" element={<Header />} />
             <Route path="/AdminDash" element={<AdminDash />}/>
             <Route path="/AdminSignIn" element={<AdminSignIn />}/>
+            <Route path="/Moviemanagement" element={<Moviemanagement />} />
           </Routes>
           <Footer/>
         </div>
