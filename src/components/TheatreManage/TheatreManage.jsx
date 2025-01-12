@@ -1,173 +1,214 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./TheatreManage.css";
+import axios from "axios";
 
 function TheatreManage() {
-  const [theatreData, setTheatreData] = useState([]); // Empty initial data
+  const [theatreData, setTheatreData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [popup, setPopup] = useState({ type: null, data: null });
   const itemsPerPage = 6;
-  const totalPages = Math.ceil(theatreData.length / itemsPerPage);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Add Theatre Handler
-  const handleAddTheatre = (newTheatre) => {
-    setTheatreData((prevData) => [
-      ...prevData,
-      {
-        id: prevData.length + 1,
-        name: newTheatre.name,
-        screens: [],
-        location: newTheatre.location,
-      },
-    ]);
-    setPopup({ type: null, data: null });
+  useEffect(() => {
+    const fetchTheatres = async () => {
+        setLoading(true)
+        setError(null);
+        try{
+           const response = await axios.get('http://localhost:27017/api/theatres');
+           setTheatreData(response.data)
+        }
+        catch(err){
+             setError(err.message);
+        }
+        finally{
+            setLoading(false)
+        }
+    };
+     fetchTheatres();
+  }, []);
+
+  const handleAddTheatre = async (newTheatre) => {
+        setLoading(true)
+        setError(null);
+    try {
+      const response = await axios.post("http://localhost:27017/api/theatres", newTheatre);
+       setTheatreData((prevData) => [...prevData, response.data]);
+       setPopup({ type: null, data: null });
+    } catch (error) {
+        setError(error.message)
+    }
+    finally{
+        setLoading(false)
+    }
   };
 
-  // Add Screen Handler
-  const handleAddScreen = (newScreen) => {
-    setTheatreData((prevData) =>
-      prevData.map((theatre) =>
-        theatre.id === parseInt(newScreen.theatreId)
-          ? {
-              ...theatre,
-              screens: [
-                ...theatre.screens,
-                {
-                  screenNumber: newScreen.screenNumber,
-                  format: newScreen.format,
-                  rowCount: newScreen.rowCount,
-                  seatsPerRow: newScreen.seatsPerRow,
-                },
-              ],
-            }
-          : theatre
-      )
-    );
-    setPopup({ type: null, data: null });
+  const handleAddScreen = async (newScreen) => {
+       setLoading(true)
+       setError(null);
+    try {
+      const response = await axios.post("http://localhost:27017/api/screens", newScreen);
+    const updatedTheatreData = theatreData.map(theatre => {
+          if(theatre._id === newScreen.theatreId){
+              return {...theatre, screens: [...(theatre.screens || []), response.data]}
+          }
+         return theatre;
+     })
+      setTheatreData(updatedTheatreData)
+       setPopup({ type: null, data: null });
+    } catch (error) {
+        setError(error.message)
+    }
+    finally{
+         setLoading(false);
+    }
   };
+
+
+  const deleteTheatre = async(theatreId) =>{
+      setLoading(true)
+       setError(null);
+      try{
+         await axios.delete(`/api/theatres/${theatreId}`)
+        setTheatreData((prevData) => prevData.filter((t) => t._id !== theatreId))
+      }
+      catch(err){
+          setError(err.message);
+      }
+     finally{
+        setLoading(false)
+     }
+  }
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentTheatres = theatreData.slice(
     startIndex,
     startIndex + itemsPerPage
   );
+   const totalPages = Math.ceil(theatreData.length / itemsPerPage);
+
+  if(loading){
+    return <p>Loading....</p>
+  }
+
+  if (error) {
+     return <p>Error: {error}</p>;
+    }
 
   return (
     <div className="theater-page">
-        <div className="theatre-container">
-            <div className="theatre-header">
-                <h2>Theatre Management</h2>
-                <div className="button-container">
-                <button
-                    className="button add-theatre"
-                    onClick={() => setPopup({ type: "addTheatre", data: null })}
-                >
-                    Add Theatre
-                </button>
-                <button
-                    className="button add-screen"
-                    onClick={() => setPopup({ type: "addScreen", data: null })}
-                >
-                    Add Screen
-                </button>
-                </div>
-            </div>
-            <div className="tm-table-wrapper">
-                <table className="theatre-table">
-                <thead>
-                    <tr>
-                    <th>Theatre Name</th>
-                    <th>Screen & Formats</th>
-                    <th>Location</th>
-                    <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {currentTheatres.length > 0 ? (
-                    currentTheatres.map((theatre) => (
-                        <tr key={theatre.id}>
-                        <td>{theatre.name}</td>
-                        <td>
-                            {theatre.screens.length > 0 ? (
-                            <ul>
-                                {theatre.screens.map((screen, index) => (
-                                <li key={index}>
-                                    Screen {screen.screenNumber}: {screen.format} (
-                                    {screen.rowCount} Rows x {screen.seatsPerRow} Seats)
-                                </li>
-                                ))}
-                            </ul>
-                            ) : (
-                            "No Screens"
-                            )}
-                        </td>
-                        <td>{theatre.location}</td>
-                        <td>
-                            <span className="action-icons">
-                            <button
-                                className="delete-icon"
-                                onClick={() =>
-                                setTheatreData((prevData) =>
-                                    prevData.filter((t) => t.id !== theatre.id)
-                                )
-                                }
-                            >
-                                ❌
-                            </button>
-                            </span>
-                        </td>
-                        </tr>
-                    ))
-                    ) : (
-                    <tr>
-                        <td colSpan="4" style={{ textAlign: "center" }}>
-                        No Theatres Added Yet
-                        </td>
-                    </tr>
-                    )}
-                </tbody>
-                </table>
-            </div>
-            <div className="pagination">
-                <button
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="page-button"
-                >
-                {"<"}
-                </button>
-                <span>
-                Page {currentPage} of {totalPages || 1}
-                </span>
-                <button
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages || totalPages === 0}
-                className="page-button"
-                >
-                {">"}
-                </button>
-            </div>
-
-            {popup.type === "addTheatre" && (
-                <AddTheatrePopup
-                onSubmit={handleAddTheatre}
-                onClose={() => setPopup({ type: null, data: null })}
-                />
-            )}
-            {popup.type === "addScreen" && (
-                <AddScreenPopup
-                theatres={theatreData}
-                onSubmit={handleAddScreen}
-                onClose={() => setPopup({ type: null, data: null })}
-                />
-            )}
+      <div className="theatre-container">
+        <div className="theatre-header">
+          <h2>Theatre Management</h2>
+          <div className="button-container">
+            <button
+              className="button add-theatre"
+              onClick={() => setPopup({ type: "addTheatre", data: null })}
+            >
+              Add Theatre
+            </button>
+            <button
+              className="button add-screen"
+              onClick={() => setPopup({ type: "addScreen", data: null })}
+            >
+              Add Screen
+            </button>
+          </div>
         </div>
+        <div className="tm-table-wrapper">
+          <table className="theatre-table">
+            <thead>
+              <tr>
+                <th>Theatre Name</th>
+                <th>Screen & Formats</th>
+                <th>Location</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentTheatres.length > 0 ? (
+                currentTheatres.map((theatre) => (
+                  <tr key={theatre._id}>
+                    <td>{theatre.location}</td>
+                    <td>
+                      {theatre.screens && theatre.screens.length > 0 ? (
+                        <ul>
+                          {theatre.screens.map((screen, index) => (
+                            <li key={index}>
+                              Screen {screen.screenNumber}: {screen.format} (
+                              {screen.rowCount} Rows x {screen.seatPerRow} Seats)
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        "No Screens"
+                      )}
+                    </td>
+                    <td>{theatre.location}</td>
+                    <td>
+                      <span className="action-icons">
+                        <button
+                          className="delete-icon"
+                           onClick={() => deleteTheatre(theatre._id)}
+                        >
+                          ❌
+                        </button>
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4" style={{ textAlign: "center" }}>
+                    No Theatres Added Yet
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+        <div className="pagination">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className="page-button"
+          >
+            {"<"}
+          </button>
+          <span>
+            Page {currentPage} of {totalPages || 1}
+          </span>
+          <button
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
+            disabled={currentPage === totalPages || totalPages === 0}
+            className="page-button"
+          >
+            {">"}
+          </button>
+        </div>
+
+        {popup.type === "addTheatre" && (
+          <AddTheatrePopup
+            onSubmit={handleAddTheatre}
+            onClose={() => setPopup({ type: null, data: null })}
+          />
+        )}
+        {popup.type === "addScreen" && (
+          <AddScreenPopup
+            theatres={theatreData}
+            onSubmit={handleAddScreen}
+            onClose={() => setPopup({ type: null, data: null })}
+          />
+        )}
+      </div>
     </div>
   );
 }
 
 function AddTheatrePopup({ onSubmit, onClose }) {
   const [formData, setFormData] = useState({
-    name: "",
     location: "",
   });
 
@@ -186,16 +227,6 @@ function AddTheatrePopup({ onSubmit, onClose }) {
       <div className="popup-content">
         <h3>Add Theatre</h3>
         <form onSubmit={handleSubmit}>
-          <label>
-            Name:
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-          </label>
           <label>
             Location:
             <input
@@ -224,7 +255,7 @@ function AddScreenPopup({ theatres, onSubmit, onClose }) {
     screenNumber: "",
     format: "",
     rowCount: "",
-    seatsPerRow: "",
+    seatPerRow: "",
   });
 
   const handleChange = (e) => {
@@ -232,9 +263,9 @@ function AddScreenPopup({ theatres, onSubmit, onClose }) {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    await onSubmit(formData);
   };
 
   return (
@@ -252,8 +283,8 @@ function AddScreenPopup({ theatres, onSubmit, onClose }) {
             >
               <option value="">Select a Theatre</option>
               {theatres.map((theatre) => (
-                <option key={theatre.id} value={theatre.id}>
-                  {theatre.name}
+                <option key={theatre._id} value={theatre._id}>
+                  {theatre.location}
                 </option>
               ))}
             </select>
@@ -295,8 +326,8 @@ function AddScreenPopup({ theatres, onSubmit, onClose }) {
               Seat Per Row:
               <input
                 type="number"
-                name="seatsPerRow"
-                value={formData.seatsPerRow}
+                name="seatPerRow"
+                value={formData.seatPerRow}
                 onChange={handleChange}
                 required
               />
