@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const PaymentMethod = ({ discountedPrice, movieTitle, selectedDate, selectedTime, selectedSeats, userId, showtimeId, showtimeSeatIds, setPaymentSuccess }) => {
     const [scriptLoaded, setScriptLoaded] = useState(false);
     const [scriptError, setScriptError] = useState(false);
-
+    const navigate = useNavigate();
 
     useEffect(() => {
         const existingScript = document.querySelector('script[src*="paypal"]');
@@ -37,31 +38,36 @@ const PaymentMethod = ({ discountedPrice, movieTitle, selectedDate, selectedTime
                             }]
                         });
                     },
-                    onApprove: async (data, actions) => {
-                      try {
-                            const order = await actions.order.capture();
+                     onApprove: async (data, actions) => {
+                        try {
+                           const order = await actions.order.capture();
                             console.log("Payment successful!", order);
 
-                           const bookingData = {
-                              userId: userId,
-                             showtimeId: showtimeId,
-                             showtimeSeatIds: showtimeSeatIds
-                           }
+                            const bookingData = {
+                                userId: userId,
+                                showtimeId: showtimeId,
+                                showtimeSeatIds: showtimeSeatIds
+                            };
 
-                           const response = await fetch('http://localhost:27017/api/bookings/', {
-                             method: 'POST',
-                              headers: {
-                                'Content-Type': 'application/json',
-                              },
-                            body: JSON.stringify(bookingData)
-                             })
-                           if(!response.ok) {
-                             const errorData = await response.json();
-                               throw new Error(`Booking creation failed: ${errorData.message || 'Unknown error'}`)
-                           }
-                          setPaymentSuccess(true);
-                            console.log("Booking successful!");
-                       } catch (error) {
+                            const response = await fetch('http://localhost:27017/api/bookings/', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify(bookingData)
+                            });
+
+                             if (!response.ok) {
+                                const errorData = await response.json();
+                                throw new Error(`Booking creation failed: ${errorData.message || 'Unknown error'}`);
+                            }
+
+                            const newBooking = await response.json();
+                            setPaymentSuccess(true);
+                            console.log("Booking successful!", newBooking);
+
+                            navigate(`/BookingConfirmation?bookingId=${newBooking._id}`);
+                        } catch (error) {
                             console.error("Payment failed or Booking failed:", error);
                             setScriptError(true);
                         }
@@ -84,16 +90,16 @@ const PaymentMethod = ({ discountedPrice, movieTitle, selectedDate, selectedTime
         };
 
         if (!existingScript) {
-          const script = document.createElement('script');
-          script.src = `https://www.paypal.com/sdk/js?client-id=AYWsDXidFtXjHrGqecjWAR9O2XOMSGZFSz88tLGFrF9WxRosm0yDF0ENC220mMEoe7za6qB325LBxbXs&currency=USD&intent=capture`;
-          script.async = true;
-          script.onload = handleScriptLoad;
-          script.onerror = handleScriptError;
-          document.body.appendChild(script);
+              const script = document.createElement('script');
+              script.src = `https://www.paypal.com/sdk/js?client-id=AdfQZoGxDBEW5WtHP5DGIftQWRT5rfDddZ4akJa6qw1TOyDCUW4toU_7SDlLioGcz37s5BW5K8DWxXA0&currency=USD&intent=capture`;
+              script.async = true;
+              script.onload = handleScriptLoad;
+              script.onerror = handleScriptError;
+              document.body.appendChild(script);
         } else {
             handleScriptLoad();
         }
-    }, [discountedPrice, movieTitle, selectedDate, selectedTime, selectedSeats, userId, showtimeId, showtimeSeatIds, setPaymentSuccess]);
+    }, [discountedPrice, movieTitle, selectedDate, selectedTime, selectedSeats, userId, showtimeId, showtimeSeatIds, setPaymentSuccess, navigate]);
 
     return (
         <div className="payment-section">

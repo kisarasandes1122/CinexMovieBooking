@@ -2,7 +2,7 @@ const Showtime = require('../models/showtimeModel');
 const Screen = require('../models/screenModel');
 const Seat = require('../models/seatModel');
 const ShowtimeSeats = require('../models/showtimeSeatsModel');
-const Movie = require('../models/movieModel'); // Import Movie model
+const Movie = require('../models/movieModel'); 
 const { startOfDay, endOfDay, isBefore, addDays, isSameDay } = require('date-fns');
 
 
@@ -211,6 +211,42 @@ const createShowtime = async (req, res) => {
   }
 };
 
+// Controller method to get showtime seats by showtimeSeatId or showtimeSeatIds
+const getShowtimeSeatsByShowtimeSeatId = async (req, res) => {
+  try {
+      const { showtimeSeatIds } = req.query;
+
+      if (!showtimeSeatIds) {
+          return res.status(400).json({ message: 'showtimeSeatIds parameter is required' });
+      }
+
+      const idsArray = showtimeSeatIds.split(','); // Split comma-separated IDs
+      
+      const showtimeSeats = await ShowtimeSeats.find({ _id: { $in: idsArray } })
+                                                .populate({
+                                                    path: 'seatId',
+                                                    model: 'Seats',
+                                                    select: 'seatNumber'
+                                                })
+                                                .lean();
+
+      if (!showtimeSeats || showtimeSeats.length === 0) {
+          return res.status(404).json({ message: 'No showtime seats found with provided IDs' });
+      }
+       const formattedSeats = showtimeSeats.map(showtimeSeat => ({
+            _id: showtimeSeat._id,
+           seatNumber: showtimeSeat.seatId.seatNumber,
+          status: showtimeSeat.status
+         }));
+
+
+      res.json(formattedSeats);
+
+  } catch (err) {
+      res.status(500).json({ message: "Error fetching showtime seats", error: err.message });
+  }
+};
+
 //New controller method to get showtime seats by showtimeId
 const getShowtimeSeatsByShowtimeId = async (req, res) => {
     try {
@@ -245,16 +281,31 @@ const getShowtimeSeatsByShowtimeId = async (req, res) => {
 //Get a showtime by id.
 const getShowtimeById = async (req, res) => {
     try {
-        const showtime = await Showtime.findById(req.params.id);
-        if (!showtime) {
-            return res.status(404).json({ message: 'Cannot find showtime' })
-        }
-        res.json(showtime)
+      const showtime = await Showtime.findById(req.params.id)
+        .populate({
+          path: 'movieId',
+          model: 'Movie',
+        })
+        .populate({
+          path: 'screenId',
+          model: 'Screens',
+          populate: {
+             path: 'theatreId',
+             model: 'Theatre'
+          }
+        });
+
+
+      if (!showtime) {
+        return res.status(404).json({ message: 'Cannot find showtime' });
+      }
+      res.json(showtime);
+    } catch (err) {
+      return res
+        .status(500)
+        .json({ message: 'Error fetching showtime', error: err.message });
     }
-    catch (err) {
-        return res.status(500).json({ message: "Error fetching showtime", error: err.message })
-    }
-}
+  };
 
 // Delete a showtime by id.
 const deleteShowtimeById = async (req, res) => {
@@ -292,10 +343,11 @@ const updateShowtimeById = async (req, res) => {
 
 
 module.exports = {
-  getShowtimesByMovieTitleAndDate,
+    getShowtimesByMovieTitleAndDate,
     createShowtime,
     getShowtimeById,
     deleteShowtimeById,
     updateShowtimeById,
-    getShowtimeSeatsByShowtimeId, // Export the new function
+    getShowtimeSeatsByShowtimeId,
+    getShowtimeSeatsByShowtimeSeatId // Export the new controller
 };

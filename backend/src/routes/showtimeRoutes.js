@@ -6,7 +6,8 @@ const {
     getShowtimeById,
     deleteShowtimeById,
     updateShowtimeById,
-    getShowtimeSeatsByShowtimeId // Import the new controller
+    getShowtimeSeatsByShowtimeId,
+    getShowtimeSeatsByShowtimeSeatId
 } = require('../controllers/showtimeController');
 
 
@@ -25,5 +26,9 @@ router.put('/:id', updateShowtimeById)
 
 // Get showtime seats by showtime ID
 router.get('/:showtimeId/seats', getShowtimeSeatsByShowtimeId); //New route
+
+// New route to get showtime seats by showtimeSeatIds
+router.get('/seats/search', getShowtimeSeatsByShowtimeSeatId);
+
 
 module.exports = router;
