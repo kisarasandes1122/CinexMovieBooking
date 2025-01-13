@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import MovieDetails from '../MovieDetails/MovieDetails.jsx';
 import ShowtimeSelector from '../Showtimes/ShowtimeSelector.jsx';
 import '../MovieBooking/MovieBooking.css';
 import { useParams } from 'react-router-dom';

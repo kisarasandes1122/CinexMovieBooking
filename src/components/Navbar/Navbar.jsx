@@ -21,7 +21,7 @@ const Navbar = ({ isLoggedIn }) => {
             <NavLink href="/">Home</NavLink>
             <NavLink href="/Moviepage">Movies</NavLink>
             <NavLink href="/OffersPage">Offers & Promotions</NavLink>
-            <NavLink href="/Contactus">About Us</NavLink>
+            <NavLink href="/Contactus">Contact Us</NavLink>
           </div>
 
           {isLoggedIn ? (
@@ -31,9 +31,9 @@ const Navbar = ({ isLoggedIn }) => {
                 <div className="dropdown-menu">
                   <p>Kisara Sandes</p>
                   <Link to="/edit-profile">Edit Profile</Link>
-                  <Link to="/upcoming-movie-bookings">Upcoming Movie Bookings</Link>
+                  <Link to="/UpComingBooking">Upcoming Movie Bookings</Link>
                   <Link to="/booking-history">Movie Booking History</Link>
-                  <Link to="/change-password">Change Password</Link>
+                  <Link to="/ChangePasswordForm">Change Password</Link>
                   <Link to="/logout">Log Out</Link>
                 </div>
               )}

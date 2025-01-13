@@ -81,7 +81,7 @@ const SignIn = ({ onLogin }) => {
 
                 <div className="help-links">
                     <p>Having Trouble in?</p>
-                    <a href="/reset-password">Reset Password</a> or{" "}
+                    <a href="/ChangePasswordForm">Reset Password</a> or{" "}
                     <a href="/RegistrationForm">Sign UP</a>
                 </div>
             </div>
