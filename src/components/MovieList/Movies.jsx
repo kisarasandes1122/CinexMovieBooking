@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../MovieList/Movies.css'
 
 
@@ -77,10 +78,16 @@ const movies = [
   },
 ];
 
+
+
 const Movies = () => {
   const [filter, setFilter] = useState("Now Showing");
 
   const filteredMovies = movies.filter(movie => movie.status === filter);
+
+  const handleClick = (movieId) => {
+    navigate(`/details/${movieId}`); // Pass movie ID to the details page
+  };
 
   return (
     <div className="app">
@@ -101,7 +108,7 @@ const Movies = () => {
               <p>{movie.duration} | {movie.releaseDate}</p>
               <p>{movie.description}</p>
               <div className="moviel-btns">
-                <button>View Details</button>
+                <button onClick={() => handleClick(movie.id)}>View Details</button>
               </div>
             </div>
           </div>

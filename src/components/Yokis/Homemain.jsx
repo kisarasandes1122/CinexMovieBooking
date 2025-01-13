@@ -5,13 +5,13 @@ import '../../css/Home.css';
 import { Link } from 'react-router-dom';
 
 function createSlug(title) {
-  if(!title) {
-     return ''
+  if (!title) {
+    return '';
   }
   return title
     .toLowerCase()
     .replace(/ /g, '-') // Replace spaces with hyphens
-    .replace(/[^\w-]+/g, '')  //remove special characters
+    .replace(/[^\w-]+/g, ''); // Remove special characters
 }
 
 const Homemain = ({ movie, isActive }) => {
@@ -27,21 +27,17 @@ const Homemain = ({ movie, isActive }) => {
           </div>
           <div className="content-container">
             <div className="text-container">
-              <h1 className="title">
-                {movie.title}
-              </h1>
-              <p className="description">
-                {movie.description}
-              </p>
+              <h1 className="title">{movie.title}</h1>
+              <p className="description">{movie.description}</p>
               <div className="buttons-container">
                 <Link to={`/booking/${createSlug(movie.title)}`} className="btn btn-primary">
                   <Ticket className="icon" />
                   Buy Tickets
                 </Link>
-                <button className="btn btn-primary">
+                <Link to={`/${createSlug(movie.title)}`} className="btn btn-primary">
                   <Play className="icon" />
                   Watch Trailer
-                </button>
+                </Link>
               </div>
             </div>
           </div>
