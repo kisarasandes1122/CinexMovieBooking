@@ -13,12 +13,8 @@ const Payments = () => {
     return (
         <div className="payment-page">
             <div className="payment-container">
-                <nav className="nav">
-                    <span>Home {'>'} Payment</span>
-                </nav>
-
                 <div className="section">
-                    <h1 className="title">{movieTitle}</h1>
+                    <h1 className="mn-title">{movieTitle}</h1>
                     <p>Date: {selectedDate} | Time: {selectedTime}</p>
                     <p>Selected Seats: {selectedSeats ? selectedSeats.join(', ') : 'No seats selected'}</p>
                      <p>User ID: {userId || 'No user ID'}</p>
