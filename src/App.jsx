@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { StrictMode } from 'react';
-import { 
-    BrowserRouter as Router, 
-    Routes, 
-    Route, 
-    useNavigate, 
-    useLocation,
-    Navigate
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+  useLocation,
+  Navigate
 } from 'react-router-dom';
 import Home1 from './Pages/home';
 import Navbar from './components/Navbar/Navbar';
@@ -15,7 +15,6 @@ import RegistrationForm from './components/RegistrationForm/RegistrationForm';
 import Moviepage from './Pages/MoviePage';
 import SignInform from './components/SignInform/SignIn';
 import SeatSelection from './components/MovieSelectionPage/SeatSelection';
-import AdminSignIn from './Pages/AdminSignIn';
 import ContactUS from './components/ContactUS/Contactus';
 import Moviemanagement from './Pages/Moviemanagement';
 import TheatreManage from './components/TheatreManage/TheatreManage';
@@ -24,7 +23,6 @@ import Payments from './components/PaymentSection/Payments';
 import MMHeader from './components/MMHeader/MMHeader';
 import * as jwt_decode from 'jwt-decode';
 import BookingConfirmation from './components/BookingConfirm/BookingConfirm';
-import OffersAndDeals from './Pages/OfferPage';
 import ShowtimeMG from './Pages/showtimeMG';
 import ChangePasswordForm from './components/ChangePassword/ChangePasswordForm';
 import UpcomingBookingDetail from './components/UpcomingBookingDetail/UpcomingBookingDetail';
@@ -33,72 +31,75 @@ import MovieDetails from './components/MovieDetails/MovieDetails';
 import AdminSignin from './Pages/AdminSignIn';
 
 const ProtectedRoute = ({ children }) => {
-    const location = useLocation();
-    const token = localStorage.getItem('token');
-    
-    if (!token) {
-        return <Navigate to="/SignInform" state={{ from: location }} replace />;
-    }
+  const location = useLocation();
+  const token = localStorage.getItem('token');
 
-    try {
-        const decoded = jwt_decode.jwtDecode(token);
-        const currentTime = Date.now() / 1000;
-        
-        if (decoded.exp < currentTime) {
-            localStorage.removeItem('token');
-            return <Navigate to="/SignInform" state={{ from: location }} replace />;
-        }
-    } catch (error) {
-        localStorage.removeItem('token');
-        return <Navigate to="/SignInform" state={{ from: location }} replace />;
-    }
+  if (!token) {
+    return <Navigate to="/SignInform" state={{ from: location }} replace />;
+  }
 
-    return children;
+  try {
+    const decoded = jwt_decode.jwtDecode(token);
+    const currentTime = Date.now() / 1000;
+
+    if (decoded.exp < currentTime) {
+      localStorage.removeItem('token');
+      return <Navigate to="/SignInform" state={{ from: location }} replace />;
+    }
+  } catch (error) {
+    localStorage.removeItem('token');
+    return <Navigate to="/SignInform" state={{ from: location }} replace />;
+  }
+
+  return children;
 };
 
 const App = () => {
-    return (
-        <StrictMode>
-            <Router>
-               <AppContent />
-            </Router>
-        </StrictMode>
-    );
+  return (
+    <StrictMode>
+      <Router>
+        <AppContent />
+      </Router>
+    </StrictMode>
+  );
 };
 
 const AppContent = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation(); // Add useLocation here
 
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            try {
-                const decoded = jwt_decode.jwtDecode(token);
-                const currentTime = Date.now() / 1000;
-                if (decoded.exp > currentTime) {
-                    setIsLoggedIn(true);
-                } else {
-                    handleLogout();
-                }
-            } catch (error) {
-                handleLogout();
-            }
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decoded = jwt_decode.jwtDecode(token);
+        const currentTime = Date.now() / 1000;
+        if (decoded.exp > currentTime) {
+          setIsLoggedIn(true);
+        } else {
+          handleLogout();
         }
-    }, []);
+      } catch (error) {
+        handleLogout();
+      }
+    }
+  }, []);
 
-    const handleLoginSuccess = (token) => {
-        localStorage.setItem('token', token);
-        setIsLoggedIn(true);
-        const from = location.state?.from?.pathname || '/';
-        navigate(from);
-    };
+  const handleLoginSuccess = (token) => {
+    localStorage.setItem('token', token);
+    setIsLoggedIn(true);
+    const from = location.state?.from?.pathname || '/';
+    navigate(from, { replace: true }); // Use replace: true for redirect
+  };
+  
 
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        setIsLoggedIn(false);
-        navigate('/SignInform');
-    };
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsLoggedIn(false);
+    navigate('/SignInform', { replace: true }); // Use replace: true for redirect
+  };
+  
 
   return (
     <div>
@@ -129,6 +130,7 @@ const AppContent = () => {
         <Route path="/ChangePasswordForm" element={<ChangePasswordForm />} />
         <Route path="/UpComingBooking" element={<UpcomingBookingDetail />} />
         <Route path="/movie/:title" element={<MovieDetails />} />
+        
       </Routes>
       <Footer />
     </div>
