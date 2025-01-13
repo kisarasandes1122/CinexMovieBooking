@@ -68,7 +68,7 @@ const App = () => {
 const AppContent = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation(); // Add useLocation here
+  const location = useLocation();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -91,20 +91,21 @@ const AppContent = () => {
     localStorage.setItem('token', token);
     setIsLoggedIn(true);
     const from = location.state?.from?.pathname || '/';
-    navigate(from, { replace: true }); // Use replace: true for redirect
+    navigate(from, { replace: true });
   };
-  
+
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('userId');
     setIsLoggedIn(false);
-    navigate('/SignInform', { replace: true }); // Use replace: true for redirect
+    navigate('/', { replace: true });
   };
-  
+
 
   return (
     <div>
-      <Navbar isLoggedIn={isLoggedIn} handleLogout={handleLogout} />
+      <Navbar isLoggedIn={isLoggedIn} handleLogout={handleLogout}  setIsLoggedIn={setIsLoggedIn}/>
       <Routes>
         <Route path="/" element={<Home1 />} />
         <Route path="/booking/:id" element={<MovieBookingpage />} />
@@ -113,7 +114,7 @@ const AppContent = () => {
         <Route path="/SignInform" element={<SignInform onLogin={handleLoginSuccess} />} />
         <Route path="/SeatSelection" element={<SeatSelection />} />
         <Route path="/AdminDashboard" element={<AdminDash />} />
-        <Route path="/AdminSignIn" element={<AdminSignin/>} />
+         <Route path="/AdminSignIn" element={<AdminSignin/>} />
         <Route path="/Moviemanagement" element={<Moviemanagement />} />
         <Route path="/TheatreManage" element={<TheatreManage />} />
         <Route path="/BookingConfirmation" element={<BookingConfirmation />} />

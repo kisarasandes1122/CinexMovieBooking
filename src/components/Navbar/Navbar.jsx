@@ -2,12 +2,13 @@ import { Link, useLocation } from "react-router-dom";
 import "./Navbar.css";
 import { useState } from "react";
 
-const Navbar = ({ isLoggedIn }) => {
+const Navbar = ({ isLoggedIn, handleLogout }) => { // Receive handleLogout as a prop
   const [showDropdown, setShowDropdown] = useState(false);
 
   const toggleDropdown = () => {
     setShowDropdown((prev) => !prev);
   };
+
 
   return (
     <nav className="navbar">
@@ -32,7 +33,7 @@ const Navbar = ({ isLoggedIn }) => {
                   <p>Kisara Sandes</p>
                   <Link to="Bookinghistory">Movie Booking</Link>
                   <Link to="/ChangePasswordForm">Change Password</Link>
-                  <Link to="/logout">Log Out</Link>
+                  <Link to="/" onClick={handleLogout}>Log Out</Link> {/* Call passed down handleLogout */}
                 </div>
               )}
             </div>
