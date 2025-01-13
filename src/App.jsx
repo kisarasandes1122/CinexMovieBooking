@@ -110,14 +110,7 @@ const AppContent = () => {
                 <Route path="/AdminSignIn" element={<AdminSignIn />} />
                 <Route path="/Moviemanagement" element={<Moviemanagement />} />
                 <Route path="/TheatreManage" element={<TheatreManage />} />
-                <Route 
-                    path="/payment" 
-                    element={
-                        <ProtectedRoute>
-                            <Payments />
-                        </ProtectedRoute>
-                    }
-                />
+                <Route path="/payment" element={ <ProtectedRoute> <Payments /> </ProtectedRoute> }/>
                 <Route path="/Contactus" element={<ContactUS />} />
                 <Route path="/MMHeader" element={<MMHeader />} />
                 <Route path="/showtimeMG" element={<ShowtimeManagement/>}/>
