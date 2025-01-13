@@ -1,14 +1,14 @@
 
-  
   .movie-management-container {
     width: 100%;
-    max-width: 800px;
+    max-width: 80%;
     margin: 0 auto;
     padding: 20px;
     color: white;
     margin-top: 50px;
     min-height: 50vh;
   }
+  
   
   .movie-management-header {
     display: flex;
@@ -52,15 +52,24 @@
   }
   
   .movie-item {
-    display: flex;
+    display: flex;   
     justify-content: space-between;
     align-items: center;
     background-color: #333;
-    padding: 10px;
+    padding: 50px;
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    flex-direction: column;
+    text-align: center;
+    margin: 20px 0px;
   }
   
+  .poster-container {
+    display: flex;
+    gap: 20px;
+}
+
   .movie-info {
     display: flex;
     flex-direction: column;
