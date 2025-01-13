@@ -47,8 +47,26 @@ const loginUser = async (req, res) => {
     }
   };
 
+  const getUserDetails = async (req, res) => {
+    try {
+      const userId = req.params.id;
+
+      const user = await User.findById(userId);
+
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+        //exclude password from user details.
+       const {password, ...userDetails} = user.toObject()
+       res.status(200).json(userDetails);
+     } catch (error) {
+      res.status(500).json({ message: 'Error fetching user details', error: error.message });
+    }
+  };
+
 
 module.exports = {
   registerUser,
   loginUser,
+  getUserDetails,
 };

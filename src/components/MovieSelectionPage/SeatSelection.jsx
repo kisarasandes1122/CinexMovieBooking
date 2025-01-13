@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./SeatSelection.css";
 import { format } from 'date-fns';
 
@@ -12,6 +12,7 @@ const SeatSelection = () => {
     const [theatreLocation, setTheatreLocation] = useState("");
     const [screenFormat, setScreenFormat] = useState("");
 
+    const navigate = useNavigate();
 
     // Get URL parameters
     const queryParams = new URLSearchParams(window.location.search);
@@ -19,6 +20,8 @@ const SeatSelection = () => {
     const movieTitle = queryParams.get("movieTitle");
 
     const API_BASE_URL = 'http://localhost:27017/api';
+    const userId = localStorage.getItem('userId');
+
 
     useEffect(() => {
         const fetchSeatAndShowtimeData = async () => {
@@ -48,8 +51,6 @@ const SeatSelection = () => {
                 }
                 const theatreData = await theatreResponse.json();
                 setTheatreLocation(theatreData.location);
-
-
 
 
                 const response = await fetch(`${API_BASE_URL}/showtimes/${showtimeId}/seats`);
@@ -90,12 +91,19 @@ const SeatSelection = () => {
     const handleSeatClick = (seatId, seatNumber, status) => {
         if (status === 'booked') return;
 
-        setSelectedSeats((prev) =>
-            prev.find(seat => seat.id === seatId)
-                ? prev.filter(seat => seat.id !== seatId)
-                : [...prev, { id: seatId, number: seatNumber }]
-        );
+
+         setSelectedSeats((prev) => {
+            const seatIndex = prev.findIndex(s => s.id === seatId);
+
+            if(seatIndex > -1){
+                return prev.filter((_,index) => index !== seatIndex)
+            }
+           
+             return [...prev, { id: seatId, number: seatNumber }];
+        });
     };
+
+
 
     const calculatePrice = showtime ? selectedSeats.length * showtime.seatPrice : 0;
 
@@ -105,7 +113,18 @@ const SeatSelection = () => {
 
     const handleContinue = async () => {
         // TODO: Implement booking logic
-        console.log('Selected seats for booking:', selectedSeats);
+       navigate('/payment', {
+            state: {
+                selectedSeats: selectedSeats.map(seat => seat.number),
+                 showtimeSeatIds: selectedSeats.map(seat => seat.id),
+                totalPrice: calculatePrice,
+                selectedDate: formattedShowtimeDate,
+                selectedTime: formattedShowtimeTime,
+                showtimeId: showtimeId, // Add the showtimeId here
+                movieTitle: movieTitle,
+                 userId: userId
+            }
+        });
     };
 
     const handleBack = () => {
