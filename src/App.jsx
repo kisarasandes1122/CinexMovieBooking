@@ -27,7 +27,8 @@ import MMHeader from './components/MMHeader/MMHeader';
 import * as jwt_decode from 'jwt-decode';
 import BookingConfirmation from './components/BookingConfirm/BookingConfirm';
 import OffersAndDeals from './Pages/OfferPage';
-import ShowtimeMG from './components/ShowtimeMG/ShowtimeMG';
+import ShowtimeMG from './Pages/showtimeMG';
+
 
 const ProtectedRoute = ({ children }) => {
     const location = useLocation();
@@ -123,7 +124,7 @@ const AppContent = () => {
                 />
                 <Route path="/Contactus" element={<ContactUS />} />
                 <Route path="/MMHeader" element={<MMHeader />} />
-                <Route path="/ShowtimeMG" element={<ShowtimeMG/>}/>
+                <Route path="/ShowtimeMG" element={<ShowtimeMG />}/>
                 <Route path="/OfferPage" element={<OffersAndDeals/>}/>
             </Routes>
             <Footer />
