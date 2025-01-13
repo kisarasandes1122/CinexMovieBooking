@@ -30,6 +30,8 @@ import MovieBookingpage from './Pages/MovieBookingpage';
 import MovieDetails from './components/MovieDetails/MovieDetails'; 
 import AdminSignin from './Pages/AdminSignIn';
 import OffersAndDeals from './components/OfferPage/OfferPage';
+import BookingHistoryp from './Pages/BookingHistoryp';
+import ChangePassword from './Pages/ChangePassword';
 
 const ProtectedRoute = ({ children }) => {
   const location = useLocation();
@@ -132,6 +134,8 @@ const AppContent = () => {
         <Route path="/ChangePasswordForm" element={<ChangePasswordForm />} />
         <Route path="/UpComingBooking" element={<UpcomingBookingDetail />} />
         <Route path="/movie/:title" element={<MovieDetails />} />
+        <Route path="/BookingHistory" element={<BookingHistoryp/>} />
+        <Route path="/ChangePassword" element={<ChangePassword/>} />
       </Routes>
       <Footer />
     </div>
