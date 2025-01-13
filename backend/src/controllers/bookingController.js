@@ -8,90 +8,121 @@ const createBooking = async (req, res) => {
     try {
         const { showtimeId, showtimeSeatIds, userId } = req.body;
 
-         if(!showtimeId || !showtimeSeatIds || !userId){
-           return res.status(400).json({ message: 'Missing required parameters' });
-           }
+        if (!showtimeId || !showtimeSeatIds || !userId) {
+            return res.status(400).json({ message: 'Missing required parameters' });
+        }
 
         //Get showtime from showtime id
-         const showtime = await Showtime.findById(showtimeId);
-         if (!showtime) {
-              return res.status(404).json({ message: 'Showtime not found' });
-         }
+        const showtime = await Showtime.findById(showtimeId);
+        if (!showtime) {
+            return res.status(404).json({ message: 'Showtime not found' });
+        }
 
-         // Get all the seat price
-         const seatPrice = showtime.seatPrice;
+        // Get all the seat price
+        const seatPrice = showtime.seatPrice;
 
-         const showtimeSeats =  await ShowtimeSeats.find({_id: {$in: showtimeSeatIds}})
-            if(showtimeSeats.length !== showtimeSeatIds.length){
-              return res.status(404).json({ message: 'Invalid Showtime Seat Id' });
-            }
+        const showtimeSeats = await ShowtimeSeats.find({ _id: { $in: showtimeSeatIds } })
+        if (showtimeSeats.length !== showtimeSeatIds.length) {
+            return res.status(404).json({ message: 'Invalid Showtime Seat Id' });
+        }
 
-         //calculate total price
-           const totalAmount =  seatPrice * showtimeSeatIds.length;
+        //calculate total price
+        const totalAmount = seatPrice * showtimeSeatIds.length;
 
         const booking = new Booking({
             userId: userId,
             showtimeId: showtimeId,
-             showtimeSeatIds: showtimeSeatIds,
+            showtimeSeatIds: showtimeSeatIds,
             totalAmount: totalAmount,
             seatCount: showtimeSeatIds.length
-           })
+        })
 
         booking.ticketNo = shortid.generate();
         const newBooking = await booking.save();
 
         // Update the seat status in showtime seat table
-          await ShowtimeSeats.updateMany(
-              { _id: { $in: showtimeSeatIds } },
-              { status: 'booked' }
-           );
+        await ShowtimeSeats.updateMany(
+            { _id: { $in: showtimeSeatIds } },
+            { status: 'booked' }
+        );
 
-         // Convert the Mongoose document to a plain JavaScript object and output
+        // Convert the Mongoose document to a plain JavaScript object and output
         const bookingObject = newBooking.toObject();
         res.status(201).json(bookingObject);
     }
-    catch(err){
-        res.status(400).json({message: err.message});
+    catch (err) {
+        res.status(400).json({ message: err.message });
     }
 }
 
-
 //get all bookings
 const getAllBookings = async (req, res) => {
-    try{
+    try {
         const bookings = await Booking.find();
         res.json(bookings);
     }
-    catch(err){
-        res.status(500).json({message: err.message})
+    catch (err) {
+        res.status(500).json({ message: err.message })
     }
 }
 
 //Get a specific booking by ID.
-const getBookingById = async(req, res) => {
-    try{
+const getBookingById = async (req, res) => {
+    try {
         const booking = await Booking.findById(req.params.id);
-        if(!booking){
-            return res.status(404).json({message: 'Cannot find booking'})
+        if (!booking) {
+            return res.status(404).json({ message: 'Cannot find booking' })
         }
         res.json(booking)
     }
-    catch(err){
-        return res.status(500).json({message: err.message})
+    catch (err) {
+        return res.status(500).json({ message: err.message })
     }
 }
 
-// Delete a booking by ID
-const deleteBookingById = async(req, res) =>{
-    try{
-        const booking = await Booking.findByIdAndDelete(req.params.id);
-        if(!booking){
-            return res.status(404).json({message: 'Cannot find booking'})
+// Get bookings for a specific user ID
+const getBookingsByUserId = async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        const bookings = await Booking.find({ userId: userId })
+            .populate('showtimeId', 'start_time start_date movieId screenId') // Populate showtime details
+            .populate({
+                path: 'showtimeId',
+                populate: {
+                    path: 'movieId',
+                    model: 'Movie',
+                    select: 'title'
+                }
+            })
+            .populate({
+                path: 'showtimeId',
+                populate: {
+                    path: 'screenId',
+                    model: 'Screens',
+                    select: 'screenNumber'
+                }
+            });
+
+        if (bookings.length === 0) {
+            return res.status(404).json({ message: 'No bookings found for this user' });
         }
-        res.json({message: 'Booking deleted'})
+        res.json(bookings);
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
     }
-    catch(err){
-        return res.status(500).json({message: err.message})
+};
+
+// Delete a booking by ID
+const deleteBookingById = async (req, res) => {
+    try {
+        const booking = await Booking.findByIdAndDelete(req.params.id);
+        if (!booking) {
+            return res.status(404).json({ message: 'Cannot find booking' })
+        }
+        res.json({ message: 'Booking deleted' })
+    }
+    catch (err) {
+        return res.status(500).json({ message: err.message })
     }
 }
 
@@ -99,5 +130,6 @@ module.exports = {
     createBooking,
     getAllBookings,
     getBookingById,
-    deleteBookingById
+    deleteBookingById,
+    getBookingsByUserId // Export the new controller
 };
