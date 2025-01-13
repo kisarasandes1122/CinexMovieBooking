@@ -1,5 +1,5 @@
 import React from 'react';
-import './OfferPage.css';
+import '../css/offerPage.css';
 
 function OffersAndDeals() {
   const offers = [
