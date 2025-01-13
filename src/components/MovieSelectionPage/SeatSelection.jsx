@@ -201,7 +201,6 @@ const SeatSelection = () => {
                 </button>
             </div>
         </div>
-        //selected
     );
 };
 
