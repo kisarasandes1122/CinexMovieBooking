@@ -361,8 +361,7 @@ module.exports = {
     deleteShowtimeById,
     updateShowtimeById,
     getShowtimeSeatsByShowtimeId,
-    getShowtimeSeatsByShowtimeSeatId 
-    getShowtimeSeatsByShowtimeId, // Export the new function
+    getShowtimeSeatsByShowtimeSeatId, // Export the new function
     getAllShowtimes //Export get all showtimes
 };
 
