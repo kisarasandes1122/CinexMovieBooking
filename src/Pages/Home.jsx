@@ -1,5 +1,5 @@
 import React from 'react'
-import Home from '../components/Jayshowtimes/Home';
+import Home from '../components/Yokis/Home';
 import Homecomingsoon from '../components/Yokis/Homecomingsoon';
 import Homenowshowing from '../components/Yokis/Homenewshowing';
 

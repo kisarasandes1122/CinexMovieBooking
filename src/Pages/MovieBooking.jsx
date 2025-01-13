@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../../src/components/Yokis/Header';
-import Breadcrumb from '../../src/components/Jayshowtimes/Breadcrumb';
 import MovieDetails from '../../src/components/Jayshowtimes/MovieDetails';
 import ShowtimeSelector from '../../src/components/Jayshowtimes/ShowtimeSelector';
 import '../css/MovieBooking.css';
 import { useParams } from 'react-router-dom';
+import Showtime from '../components/Jayshowtimes/Showtime';
 
 function createSlug(title) {
     if(!title) {
@@ -64,7 +64,7 @@ const MovieBooking = () => {
         <div>
             <Header />
             <div className="container">
-                <Breadcrumb />
+                <Showtime />
                 {movie && <MovieDetails movie={movie} />}
                 <ShowtimeSelector />
             </div>
