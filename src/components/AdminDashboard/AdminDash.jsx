@@ -16,7 +16,6 @@ const AdminDash = () => {
 
   return (
     <div className="dashboard">
-      {/* Sidebar */}
       <div className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
         <ul>
           <li onClick={() => handleNavigation('/dashboard')}>Dashboard</li>
@@ -32,7 +31,6 @@ const AdminDash = () => {
           <button className="toggle-btn" onClick={toggleSidebar}>
             ☰
           </button>
-          <h1>CINEX</h1>
         </header>
         <div className="admincontent">
           <main>
