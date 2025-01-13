@@ -4,9 +4,9 @@ import './Contactus.css';
 const ContactUS = () => {
   return (
     <div className="contactus-form">
-        <div className="form-container">
+        <div className="cform-container">
         <h2>Contact Us</h2>
-            <form>
+            <form className='cform'>
                 <input type="text" placeholder="Full Name" required />
                 <input type="email" placeholder="Email" required />
                 <input type="tel" placeholder="Phone" required />
