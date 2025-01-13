@@ -24,10 +24,10 @@ import TheatreManage from './components/TheatreManage/TheatreManage';
 import AdminDash from './components/AdminDashboard/AdminDash';
 import Payments from './components/PaymentSection/Payments';
 import MMHeader from './components/MMHeader/MMHeader';
-import ShowtimeManagement from './Pages/showtimeMG';
 import * as jwt_decode from 'jwt-decode';
 import BookingConfirmation from './components/BookingConfirm/BookingConfirm';
 import OffersAndDeals from './Pages/OfferPage';
+import ShowtimeMG from './components/ShowtimeMG/ShowtimeMG';
 
 const ProtectedRoute = ({ children }) => {
     const location = useLocation();
@@ -123,7 +123,7 @@ const AppContent = () => {
                 />
                 <Route path="/Contactus" element={<ContactUS />} />
                 <Route path="/MMHeader" element={<MMHeader />} />
-                <Route path="/showtimeMG" element={<ShowtimeManagement/>}/>
+                <Route path="/ShowtimeMG" element={<ShowtimeMG/>}/>
                 <Route path="/OfferPage" element={<OffersAndDeals/>}/>
             </Routes>
             <Footer />

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import 'src/Pages/showtimeMG.jsx';
+import '../ShowtimeMG/ShowtimeMG';
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
 
 const initialShowtimes = [
@@ -16,7 +16,7 @@ const initialShowtimes = [
     },
 ];
 
-function ShowtimeManagement() {
+function ShowtimeMG() {
     const [showtimes, setShowtimes] = useState(initialShowtimes);
     const [searchTerm, setSearchTerm] = useState('');
     const [isAddShowtimePopupOpen, setIsAddShowtimePopupOpen] = useState(false);
@@ -273,4 +273,4 @@ function AddShowtimePopup({ onClose, onSave, editingShowtime }) {
     );
 }
 
-export default ShowtimeManagement;
+export default ShowtimeMG;
