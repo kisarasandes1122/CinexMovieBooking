@@ -15,7 +15,6 @@ import RegistrationForm from './components/RegistrationForm/RegistrationForm';
 import Moviepage from './Pages/MoviePage';
 import SignInform from './components/SignInform/SignIn';
 import SeatSelection from './components/MovieSelectionPage/SeatSelection';
-import ContactUS from './components/ContactUS/Contactus';
 import Moviemanagement from './Pages/Moviemanagement';
 import TheatreManage from './components/TheatreManage/TheatreManage';
 import AdminDash from './components/AdminDashboard/AdminDash';
@@ -29,6 +28,7 @@ import UpcomingBookingDetail from './components/UpcomingBookingDetail/UpcomingBo
 import MovieBookingpage from './Pages/MovieBookingpage';
 import AdminSignin from './Pages/AdminSignIn';
 import OffersAndDeals from './components/OffersSection/OfferPage';
+import AboutUs from './Pages/AboutUs';
 
 const ProtectedRoute = ({ children }) => {
   const location = useLocation();
@@ -124,7 +124,7 @@ const AppContent = () => {
             </ProtectedRoute>
           }
         />
-        <Route path="/Aboutus" element={<ContactUS />} />
+        <Route path="/Aboutus" element={<AboutUs/>} />
         <Route path="/MMHeader" element={<MMHeader />} />
         <Route path="/ShowtimeMG" element={<ShowtimeMG />} />
         <Route path="/ChangePasswordForm" element={<ChangePasswordForm />} />
