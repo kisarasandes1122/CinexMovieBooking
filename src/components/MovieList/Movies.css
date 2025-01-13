@@ -78,12 +78,12 @@ body {
   padding: 15px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  justify-content: space-between;
+  gap: 0px;
+  justify-content: space-evenly;
 }
 
 .movie-info-m h2 {
-  font-size: 16px;
+  font-size: 20px;
   margin-bottom: 10px;
   font-weight: bold;
 }
@@ -95,7 +95,6 @@ body {
 
 .moviel-btns {
   display: flex;
-  justify-content: flex-end;
   align-items: center;
   gap: 10px;
   flex-wrap: nowrap;
@@ -131,9 +130,7 @@ body {
     width: 70%;
   }
 
-  .moviel-btns {
-    justify-content: flex-end;
-  }
+
 }
 
 @media (max-width: 768px) {
