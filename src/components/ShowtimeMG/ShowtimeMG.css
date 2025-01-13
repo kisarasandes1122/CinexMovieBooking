@@ -124,3 +124,14 @@
 .tablebtnrow{
   display: flex;
 }
+
+input, select, textarea {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background-color: white;
+  color: #333;
+}

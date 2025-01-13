@@ -1,7 +1,7 @@
 import React from "react";
 import { Play, Ticket } from "lucide-react";
 import 'bootstrap/dist/css/bootstrap.css';
-import '../../css/Home.css';
+import './Home.css';
 import { Link } from 'react-router-dom';
 
 function createSlug(title) {

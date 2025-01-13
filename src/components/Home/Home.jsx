@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Homemain from "../Yokis/Homemain";
+import Homemain from "../Home/Homemain";
 import axios from "axios";
 
 const Home = () => {

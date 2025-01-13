@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import Header from '../../src/components/Yokis/Header';
-import MovieDetails from '../../src/components/Jayshowtimes/MovieDetails';
-import ShowtimeSelector from '../../src/components/Jayshowtimes/ShowtimeSelector';
-import '../css/MovieBooking.css';
+import MovieDetails from '../MovieDetails/MovieDetails.jsx';
+import ShowtimeSelector from '../Showtimes/ShowtimeSelector.jsx';
+import '../MovieBooking/MovieBooking.css';
 import { useParams } from 'react-router-dom';
-import Showtime from '../components/Jayshowtimes/Showtime';
+import Showtime from '../Showtimes/Showtime.jsx';
 
 function createSlug(title) {
     if(!title) {
@@ -62,7 +61,6 @@ const MovieBooking = () => {
 
     return (
         <div>
-            <Header />
             <div className="container">
                 <Showtime />
                 {movie && <MovieDetails movie={movie} />}
