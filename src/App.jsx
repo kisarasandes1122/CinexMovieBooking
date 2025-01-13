@@ -23,13 +23,13 @@ import Payments from './components/PaymentSection/Payments';
 import MMHeader from './components/MMHeader/MMHeader';
 import * as jwt_decode from 'jwt-decode';
 import BookingConfirmation from './components/BookingConfirm/BookingConfirm';
-import OffersAndDeals from './Pages/OfferPage';
 import ShowtimeMG from './Pages/showtimeMG';
 import ChangePasswordForm from './components/ChangePassword/ChangePasswordForm';
 import UpcomingBookingDetail from './components/UpcomingBookingDetail/UpcomingBookingDetail';
 import MovieBookingpage from './Pages/MovieBookingpage';
 import MovieDetails from './components/MovieDetails/MovieDetails'; 
 import AdminSignin from './Pages/AdminSignIn';
+import OffersAndDeals from './components/OfferPage/OfferPage';
 
 const ProtectedRoute = ({ children }) => {
   const location = useLocation();
@@ -128,7 +128,7 @@ const AppContent = () => {
         <Route path="/Contactus" element={<ContactUS />} />
         <Route path="/MMHeader" element={<MMHeader />} />
         <Route path="/ShowtimeMG" element={<ShowtimeMG />} />
-        <Route path="/OfferPage" element={<OffersAndDeals />} />
+        <Route path="/OfferPage" element={<OffersAndDeals/>} />
         <Route path="/ChangePasswordForm" element={<ChangePasswordForm />} />
         <Route path="/UpComingBooking" element={<UpcomingBookingDetail />} />
         <Route path="/movie/:title" element={<MovieDetails />} />
