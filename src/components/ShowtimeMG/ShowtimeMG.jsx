@@ -1,276 +1,250 @@
-import React, { useState } from 'react';
-import '../ShowtimeMG/ShowtimeMG';
-import { FiEdit, FiTrash2 } from 'react-icons/fi';
-
-const initialShowtimes = [
-    {
-        id: 1,
-        movie: 'Interstellar',
-        theatre: 'Cinex - OGF',
-        screen: '03',
-        startDate: '2024/03/15',
-        endDate: '2024/03/15',
-        time: '19:00',
-        format: 'IMAX',
-        seatPrice: 'Rs. 2500',
-    },
-];
+import React, { useState } from "react";
+import "./ShowtimeMG.css";
 
 function ShowtimeMG() {
-    const [showtimes, setShowtimes] = useState(initialShowtimes);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [isAddShowtimePopupOpen, setIsAddShowtimePopupOpen] = useState(false);
-    const [editingShowtime, setEditingShowtime] = useState(null);
+  const [showtimes, setShowtimes] = useState([
+    {
+      movie: "Interstellar",
+      theatre: "Cinex - OGF",
+      screen: "03",
+      startDate: "2024/03/15",
+      endDate: "2024/03/15",
+      time: "19:00",
+      format: "IMAX",
+      seatPrice: "Rs. 2500",
+    },
+  ]);
 
-    const filteredShowtimes = showtimes.filter((showtime) =>
-        Object.values(showtime)
-            .join(' ')
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase())
-    );
+  const [isFormVisible, setFormVisible] = useState(false);
+  const [isEditMode, setEditMode] = useState(false);
+  const [currentEditIndex, setCurrentEditIndex] = useState(null);
 
-    const handleAddShowtimeClick = () => {
-        setEditingShowtime(null);
-        setIsAddShowtimePopupOpen(true);
-    };
+  const [formData, setFormData] = useState({
+    movie: "",
+    theatre: "",
+    screen: "",
+    startDate: "",
+    endDate: "",
+    time: "",
+    seatPrice: "",
+    format: "IMAX",
+  });
 
-    const handleCloseModal = () => {
-        setIsAddShowtimePopupOpen(false);
-        setEditingShowtime(null);
-    };
+  // Open form for adding a new showtime
+  const handleAddShowtimeClick = () => {
+    setFormVisible(true);
+    setEditMode(false); // Not in edit mode
+    resetForm();
+  };
 
-    const handleDeleteShowtime = (id) => {
-        const updatedShowtimes = showtimes.filter((showtime) => showtime.id !== id);
-        setShowtimes(updatedShowtimes);
-    };
+  // Open form for editing an existing showtime
+  const handleEditClick = (index) => {
+    setFormVisible(true);
+    setEditMode(true); // Set to edit mode
+    setCurrentEditIndex(index);
+    setFormData(showtimes[index]);
+  };
 
-    const handleEditShowtime = (showtime) => {
-        setEditingShowtime(showtime);
-        setIsAddShowtimePopupOpen(true);
-    };
+  // Close the form
+  const handleCloseForm = () => {
+    setFormVisible(false);
+    resetForm();
+  };
 
-    const handleSaveShowtime = (newShowtime) => {
-        if (editingShowtime) {
-            const updatedShowtimes = showtimes.map((showtime) =>
-                showtime.id === editingShowtime.id ? newShowtime : showtime
-            );
-            setShowtimes(updatedShowtimes);
-        } else {
-            newShowtime.id = showtimes.length > 0 ? showtimes[showtimes.length - 1].id + 1 : 1;
-            setShowtimes([...showtimes, newShowtime]);
-        }
-        handleCloseModal();
-    };
+  // Reset form data
+  const resetForm = () => {
+    setFormData({
+      movie: "",
+      theatre: "",
+      screen: "",
+      startDate: "",
+      endDate: "",
+      time: "",
+      seatPrice: "",
+      format: "IMAX",
+    });
+    setCurrentEditIndex(null);
+  };
 
-    return (
-        <div className="container">
-            <div className="header">
-                <h1>Showtime Management</h1>
-                <button className="add-showtime-button" onClick={handleAddShowtimeClick}>
-                    Add Showtime
-                </button>
-            </div>
+  // Handle form input changes
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
-            <div className="search-bar">
-                <input
-                    type="text"
-                    placeholder="Search Movies or Theatre"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
-            </div>
+  // Submit form for adding or editing
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    if (!formData.movie || !formData.theatre || !formData.seatPrice) {
+      alert("Please fill in all required fields.");
+      return;
+    }
 
-            <div className="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Movie</th>
-                            <th>Theatre</th>
-                            <th>Screen</th>
-                            <th>Start Date</th>
-                            <th>End Date</th>
-                            <th>Time</th>
-                            <th>Format</th>
-                            <th>Seat Price</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filteredShowtimes.map((showtime) => (
-                            <tr key={showtime.id}>
-                                <td>{showtime.movie}</td>
-                                <td>{showtime.theatre}</td>
-                                <td>{showtime.screen}</td>
-                                <td>{showtime.startDate}</td>
-                                <td>{showtime.endDate}</td>
-                                <td>{showtime.time}</td>
-                                <td>{showtime.format}</td>
-                                <td>{showtime.seatPrice}</td>
-                                <td className="action-icons">
-                                    <button className="icon-button edit-button" onClick={() => handleEditShowtime(showtime)}>
-                                        <FiEdit />
-                                    </button>
-                                    <button className="icon-button delete-button" onClick={() => handleDeleteShowtime(showtime.id)}>
-                                        <FiTrash2 />
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+    if (isEditMode) {
+      // Update the showtime in the list
+      const updatedShowtimes = [...showtimes];
+      updatedShowtimes[currentEditIndex] = formData;
+      setShowtimes(updatedShowtimes);
+    } else {
+      // Add a new showtime
+      setShowtimes([...showtimes, formData]);
+    }
 
-            <div className="pagination">
-                <button className="pagination-button"></button>
-                <span>Page 1 of 2</span>
-                <button className="pagination-button"></button>
-            </div>
+    handleCloseForm();
+  };
 
-            {isAddShowtimePopupOpen && (
-                <AddShowtimePopup
-                    onClose={handleCloseModal}
-                    onSave={handleSaveShowtime}
-                    editingShowtime={editingShowtime}
-                />
-            )}
-        </div>
-    );
-}
+  // Delete a showtime
+  const handleDelete = (index) => {
+    const updatedShowtimes = showtimes.filter((_, i) => i !== index);
+    setShowtimes(updatedShowtimes);
+  };
 
-function AddShowtimePopup({ onClose, onSave, editingShowtime }) {
-    const [movie, setMovie] = useState(editingShowtime?.movie || '');
-    const [theatre, setTheatre] = useState(editingShowtime?.theatre || '');
-    const [screen, setScreen] = useState(editingShowtime?.screen || '');
-    const [startDate, setStartDate] = useState(editingShowtime?.startDate || '');
-    const [selectedTime, setSelectedTime] = useState('');
-    const [endDate, setEndDate] = useState(editingShowtime?.endDate || '');
-    const [seatPrice, setSeatPrice] = useState(editingShowtime?.seatPrice || '');
+  return (
+    <div className="showtime-content">
+        <div className="app">
+        <header className="showtime-management-header">
+            <h1>Showtime Management</h1>
+            <input
+            type="text"
+            placeholder="Search Movies or Theatre"
+            className="search-bar"
+            />
+            <button className="add-showtime-btn" onClick={handleAddShowtimeClick}>
+            Add Showtime
+            </button>
+        </header>
 
-    // Generate time options in 12-hour format with 30-minute intervals
-    const generateTimeOptions = () => {
-        const times = [];
-        for (let hour = 0; hour < 24; hour++) {
-            for (const minute of ['00', '30']) {
-                const period = hour < 12 ? 'AM' : 'PM'; // Changed to uppercase
-                let displayHour = hour % 12;
-                if (displayHour === 0) {
-                    displayHour = 12;
-                }
-                times.push(`${displayHour}:${minute} ${period}`);
-            }
-        }
-        return times;
-    };
+        <table className="showtime-table">
+            <thead>
+            <tr>
+                <th>Movie</th>
+                <th>Theatre</th>
+                <th>Screen</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Time</th>
+                <th>Format</th>
+                <th>Seat Price</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            {showtimes.map((showtime, index) => (
+                <tr key={index}>
+                <td>{showtime.movie}</td>
+                <td>{showtime.theatre}</td>
+                <td>{showtime.screen}</td>
+                <td>{showtime.startDate}</td>
+                <td>{showtime.endDate}</td>
+                <td>{showtime.time}</td>
+                <td>{showtime.format}</td>
+                <td>{showtime.seatPrice}</td>
+                <td className="tablebtnrow">
+                    <button onClick={() => handleEditClick(index)}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                        <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.5.5 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11z"/>
+                        </svg>
+                    </button>
+                    <button onClick={() => handleDelete(index)}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                        </svg>
+                    </button>
+                </td>
+                </tr>
+            ))}
+            </tbody>
+        </table>
 
-    const timeOptions = generateTimeOptions();
-
-    // Initialize selectedTime if editing
-    React.useEffect(() => {
-        if (editingShowtime && editingShowtime.time) {
-            const [hour24, minute] = editingShowtime.time.split(':');
-            const hour = parseInt(hour24, 10);
-            const period = hour < 12 ? 'AM' : 'PM'; // Changed to uppercase
-            const displayHour = hour === 0 ? 12 : (hour > 12 ? hour - 12 : hour);
-            setSelectedTime(`${displayHour}:${minute} ${period}`);
-        } else {
-            setSelectedTime('12:00 AM'); // Default time with uppercase
-        }
-    }, [editingShowtime]);
-
-    const handleSubmit = () => {
-        const [timePart, periodPart] = selectedTime.split(' ');
-        const [displayHourStr, minute] = timePart.split(':');
-        let displayHour = parseInt(displayHourStr, 10);
-        let hour24 = displayHour;
-
-        if (periodPart === 'PM' && displayHour !== 12) {
-            hour24 += 12;
-        } else if (periodPart === 'AM' && displayHour === 12) {
-            hour24 = 0;
-        } else if (periodPart === 'PM' && displayHour === 12) {
-            hour24 = 12;
-        }
-
-        const newShowtime = {
-            id: editingShowtime?.id,
-            movie,
-            theatre,
-            screen,
-            startDate,
-            endDate,
-            time: `${String(hour24).padStart(2, '0')}:${minute}`,
-            format: 'IMAX',
-            seatPrice,
-        };
-        onSave(newShowtime);
-    };
-
-    return (
-        <div className="popup-overlay">
-            <div className="popup">
-                <h2>{editingShowtime ? 'Edit Showtime' : 'Add Showtime'}</h2>
+        {isFormVisible && (
+            <div className="form-overlay">
+            <div className="form-container">
+                <h2>{isEditMode ? "Edit Showtime" : "Add Showtime"}</h2>
+                <form onSubmit={handleFormSubmit}>
                 <div className="form-group">
-                    <label htmlFor="movie">Movie</label>
-                    <select id="movie" value={movie} onChange={(e) => setMovie(e.target.value)}>
-                        <option value="">Select a movie</option>
-                        <option value="Interstellar">Interstellar</option>
-                        <option value="One shot One">One shot One</option>
-                        <option value="Ra Daniel Dawal Migel">Ra Daniel Dawal Migel</option>
-                    </select>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="theatre">Theatre</label>
-                    <select id="theatre" value={theatre} onChange={(e) => setTheatre(e.target.value)}>
-                        <option value="">Select a theatre</option>
-                        <option value="Cinex - OGF">Cinex - OGF</option>
-                    </select>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="screen">Screen</label>
-                    <select id="screen" value={screen} onChange={(e) => setScreen(e.target.value)}>
-                        <option value="">Select a screen</option>
-                        <option value="01">01</option>
-                        <option value="02">02</option>
-                        <option value="03">03</option>
-                    </select>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="start-date">Start Date</label>
-                    <input type="date" id="start-date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="time">Time</label>
-                    <select id="time" value={selectedTime} onChange={(e) => setSelectedTime(e.target.value)}>
-                        <option value="">Select Time</option>
-                        {timeOptions.map((time) => (
-                            <option key={time} value={time}>{time}</option>
-                        ))}
-                    </select>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="end-date">End Date</label>
-                    <input type="date" id="end-date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="seat-price">Seat Price</label>
+                    <label>Movie</label>
                     <input
-                        type="text"
-                        id="seat-price"
-                        value={seatPrice}
-                        onChange={(e) => setSeatPrice(e.target.value)}
+                    type="text"
+                    name="movie"
+                    placeholder="Enter movie name"
+                    value={formData.movie}
+                    onChange={handleFormChange}
                     />
                 </div>
-                <div className="modal-actions">
-                    <button className="cancel-button" onClick={onClose}>
-                        Cancel
+                <div className="form-group">
+                    <label>Theatre</label>
+                    <input
+                    type="text"
+                    name="theatre"
+                    placeholder="Enter theatre name"
+                    value={formData.theatre}
+                    onChange={handleFormChange}
+                    />
+                </div>
+                <div className="form-group">
+                    <label>Screen</label>
+                    <input
+                    type="text"
+                    name="screen"
+                    placeholder="Enter screen number"
+                    value={formData.screen}
+                    onChange={handleFormChange}
+                    />
+                </div>
+                <div className="form-group inline-group">
+                    <div>
+                    <label>Start Date</label>
+                    <input
+                        type="date"
+                        name="startDate"
+                        value={formData.startDate}
+                        onChange={handleFormChange}
+                    />
+                    </div>
+                    <div>
+                    <label>Time</label>
+                    <input
+                        type="time"
+                        name="time"
+                        value={formData.time}
+                        onChange={handleFormChange}
+                    />
+                    </div>
+                    <div>
+                    <label>End Date</label>
+                    <input
+                        type="date"
+                        name="endDate"
+                        value={formData.endDate}
+                        onChange={handleFormChange}
+                    />
+                    </div>
+                    <div>
+                    <label>Seat Price</label>
+                    <input
+                        type="text"
+                        name="seatPrice"
+                        placeholder="Enter seat price"
+                        value={formData.seatPrice}
+                        onChange={handleFormChange}
+                    />
+                    </div>
+                </div>
+                <div className="form-actions">
+                    <button type="button" onClick={handleCloseForm}>
+                    Cancel
                     </button>
-                    <button className="save-button" onClick={handleSubmit}>
-                        {editingShowtime ? 'Update' : 'Save'}
+                    <button type="submit">
+                    {isEditMode ? "Save Changes" : "Save"}
                     </button>
                 </div>
+                </form>
             </div>
+            </div>
+        )}
         </div>
-    );
+    </div>
+  );
 }
 
 export default ShowtimeMG;
