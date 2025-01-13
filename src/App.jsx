@@ -26,6 +26,7 @@ import Payments from './components/PaymentSection/Payments';
 import MMHeader from './components/MMHeader/MMHeader';
 import ShowtimeManagement from './Pages/showtimeMG';
 import * as jwt_decode from 'jwt-decode';
+import BookingConfirmation from './components/BookingConfirm/BookingConfirm';
 
 const ProtectedRoute = ({ children }) => {
     const location = useLocation();
@@ -110,6 +111,7 @@ const AppContent = () => {
                 <Route path="/AdminSignIn" element={<AdminSignIn />} />
                 <Route path="/Moviemanagement" element={<Moviemanagement />} />
                 <Route path="/TheatreManage" element={<TheatreManage />} />
+                <Route path="/BookingConfirmation" element={<BookingConfirmation/>} />
                 <Route 
                     path="/payment" 
                     element={
