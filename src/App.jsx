@@ -27,8 +27,8 @@ import ShowtimeMG from './Pages/showtimeMG';
 import ChangePasswordForm from './components/ChangePassword/ChangePasswordForm';
 import UpcomingBookingDetail from './components/UpcomingBookingDetail/UpcomingBookingDetail';
 import MovieBookingpage from './Pages/MovieBookingpage';
-import MovieDetails from './components/MovieDetails/MovieDetails'; 
 import AdminSignin from './Pages/AdminSignIn';
+import MovieDetails from './Pages/MovieDetails';
 
 const ProtectedRoute = ({ children }) => {
   const location = useLocation();
@@ -129,8 +129,7 @@ const AppContent = () => {
         <Route path="/ShowtimeMG" element={<ShowtimeMG />} />
         <Route path="/ChangePasswordForm" element={<ChangePasswordForm />} />
         <Route path="/UpComingBooking" element={<UpcomingBookingDetail />} />
-        <Route path="/movie/:title" element={<MovieDetails />} />
-        
+        <Route path="/MovieDetails" element={<MovieDetails/>} />
       </Routes>
       <Footer />
     </div>
