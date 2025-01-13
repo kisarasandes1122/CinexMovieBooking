@@ -52,7 +52,7 @@ const Footer = () => {
       </div>
       <div className="footer-bottom">
         <div className="container">
-          <p>Copyright © Cinex 2024</p>
+          <p>© 2025 CINEX. All Rights Reserved.</p>
         </div>
       </div>
     </footer>
