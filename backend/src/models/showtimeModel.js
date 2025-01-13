@@ -5,7 +5,6 @@ const showtimeSchema = new mongoose.Schema({
   screenId: { type: mongoose.Schema.Types.ObjectId, ref: 'Screens', required: true },
   start_date: { type: Date, required: true },
   start_time: { type: String, required: true },
-  end_date: {type: Date, required: true},
   seatPrice: { type: Number, required: true },
   recurrence: {
     type: { type: String, enum: ['none', 'daily'], default: 'daily' },
