@@ -91,7 +91,7 @@ const PaymentMethod = ({ discountedPrice, movieTitle, selectedDate, selectedTime
 
         if (!existingScript) {
               const script = document.createElement('script');
-              script.src = `https://www.paypal.com/sdk/js?client-id=AdfQZoGxDBEW5WtHP5DGIftQWRT5rfDddZ4akJa6qw1TOyDCUW4toU_7SDlLioGcz37s5BW5K8DWxXA0&currency=USD&intent=capture`;
+              script.src = `https://www.paypal.com/sdk/js?client-id=AfIVO7Ti9-VJzpR6sKoU1ympvAdOcNwogZY9zGOYXmQroAAVadJtukjeOK51go2ek_e6esOXAW_cVEvH&currency=USD&intent=capture`;
               script.async = true;
               script.onload = handleScriptLoad;
               script.onerror = handleScriptError;
