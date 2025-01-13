@@ -1,15 +1,18 @@
 import React, { useState } from "react";
+import { useNavigate, useLocation } from 'react-router-dom';
 import './SignIn.css';
+import * as jwt_decode from 'jwt-decode';
 
-const SignIn = () => {
+const SignIn = ({ onLogin }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [signInStatus, setSignInStatus] = useState(null); // State for login status
-    const [token, setToken] = useState(null); // State to store the token
+    const [signInStatus, setSignInStatus] = useState(null);
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setSignInStatus("submitting") //Set login status
+        setSignInStatus("submitting");
 
         try {
             const response = await fetch('http://localhost:27017/api/auth/login', {
@@ -21,24 +24,28 @@ const SignIn = () => {
             });
 
             if (response.ok) {
-               setSignInStatus("success") //set sign in status to success
-                 const data = await response.json();
-                console.log("Logged in Successfully", data);
-                 setToken(data.token)  //set token to state variable
-               // Clear the form
-                   setEmail("");
-                  setPassword("");
-                // Optional: Redirect user here
-            }
-            else {
+                const data = await response.json();
+                setSignInStatus("success");
+                onLogin(data.token);
+
+                 try {
+                       const decodedToken = jwt_decode.jwtDecode(data.token);
+                        localStorage.setItem('userId', decodedToken.userId);
+                 }
+                catch(error){
+                    console.error('Error decoding token', error)
+                }
+
+                setEmail("");
+                setPassword("");
+                
+                // Navigate to the protected route or home
+                const from = location.state?.from?.pathname || '/';
+                navigate(from, { replace: true });
+            } else {
                 setSignInStatus('error');
-                try{
-                     const errorData = await response.json();
-                    console.error('Sign In failed:', errorData.message || "Unknown error");
-                }
-              catch(err) {
-                    console.error("Sign In Failed:", err)
-                }
+                const errorData = await response.json();
+                console.error('Sign In failed:', errorData.message || "Unknown error");
             }
         } catch (error) {
             setSignInStatus('error');
@@ -69,9 +76,7 @@ const SignIn = () => {
                     {signInStatus === "submitting" && <p>Submitting the form....</p>}
                     {signInStatus === "success" && <p style={{ color: 'green' }}>Logged in Successfully</p>}
                     {signInStatus === "error" && <p style={{ color: 'red' }}>Sign In Failed. Please try again.</p>}
-
                     <button type="submit">Sign in</button>
-                     
                 </form>
 
                 <div className="help-links">
