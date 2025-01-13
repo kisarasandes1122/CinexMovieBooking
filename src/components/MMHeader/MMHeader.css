@@ -1,10 +1,4 @@
-body {
-    background-color: #1f1f1f;
-    color: white;
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-  }
+
   
   .movie-management-container {
     width: 100%;
@@ -13,6 +7,7 @@ body {
     padding: 20px;
     color: white;
     margin-top: 50px;
+    min-height: 50vh;
   }
   
   .movie-management-header {
@@ -135,7 +130,7 @@ body {
     width: 50%;
     max-width: 90%;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    margin-top: 200px;
+    margin-top: 410px;
   }
   
   .modal-content h3 {
@@ -145,11 +140,25 @@ body {
   .modal-content form div {
     margin-bottom: 10px;
   }
-  
+
+  .css-19bb58m{
+    height: 40px;
+  }
+  .css-hlgwow{
+    height: 40px;
+    display: flex;
+    align-content: center;
+  }
+  .css-13cymwt-control{
+    height: 40px;
+    display: flex;
+  }
+
   .modal-content label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
+    color: black;
   }
   
   .modal-content input,
@@ -158,6 +167,8 @@ body {
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
+    background-color: #ffff;
+    color: #000;
   }
   
   .modal-actions {

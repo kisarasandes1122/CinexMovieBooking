@@ -24,6 +24,7 @@ import TheatreManage from './components/TheatreManage/TheatreManage';
 import AdminDash from './components/AdminDashboard/AdminDash';
 import Payments from './components/PaymentSection/Payments';
 import MMHeader from './components/MMHeader/MMHeader';
+import ShowtimeManagement from './Pages/showtimeMG';
 import * as jwt_decode from 'jwt-decode';
 
 const ProtectedRoute = ({ children }) => {
@@ -119,6 +120,7 @@ const AppContent = () => {
                 />
                 <Route path="/Contactus" element={<ContactUS />} />
                 <Route path="/MMHeader" element={<MMHeader />} />
+            <Route path="/showtimemgr" element={<ShowtimeManagement/>}/>
             </Routes>
             <Footer />
         </div>

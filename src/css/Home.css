@@ -92,7 +92,6 @@ button {
     cursor: pointer;
     border-radius: 5px;
     transition: all 0.3s ease;
-    margin: 10px 0px 0px;
 }
 button:active {
     background-color: #7e0f0f; 
@@ -109,6 +108,7 @@ button:hover {
     border: #731010;
     --bs-btn-active-bg: #7e0f0f ;
     gap: 10px;
+    width: max-content;
 }
 .icon {
     width: 20px;
