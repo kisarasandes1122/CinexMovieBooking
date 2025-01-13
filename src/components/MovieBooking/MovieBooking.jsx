@@ -3,6 +3,7 @@ import ShowtimeSelector from '../Showtimes/ShowtimeSelector.jsx';
 import '../MovieBooking/MovieBooking.css';
 import { useParams } from 'react-router-dom';
 import Showtime from '../Showtimes/Showtime.jsx';
+import MovieDetails from '../MovieDetails/MovieDetails.jsx';
 
 function createSlug(title) {
     if(!title) {

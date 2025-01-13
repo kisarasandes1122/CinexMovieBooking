@@ -124,7 +124,7 @@ const AppContent = () => {
             </ProtectedRoute>
           }
         />
-        <Route path="/Contactus" element={<ContactUS />} />
+        <Route path="/Aboutus" element={<ContactUS />} />
         <Route path="/MMHeader" element={<MMHeader />} />
         <Route path="/ShowtimeMG" element={<ShowtimeMG />} />
         <Route path="/ChangePasswordForm" element={<ChangePasswordForm />} />

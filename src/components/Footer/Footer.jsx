@@ -11,7 +11,7 @@ const Footer = () => {
             <a href="/">Home</a>
             <a href="/Moviepage">Movies</a>
             <a href="/about">About CINEX</a>
-            <a href="/Contactus">Contact Us</a>
+            <a href="/Contactus">About Us</a>
           </div>
 
           <div className="footer-section">

@@ -21,7 +21,7 @@ const Navbar = ({ isLoggedIn }) => {
             <NavLink href="/">Home</NavLink>
             <NavLink href="/Moviepage">Movies</NavLink>
             <NavLink href="/OffersPage">Offers & Promotions</NavLink>
-            <NavLink href="/Contactus">Contact Us</NavLink>
+            <NavLink href="/Contactus">About Us</NavLink>
           </div>
 
           {isLoggedIn ? (
