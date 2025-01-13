@@ -28,6 +28,8 @@ import * as jwt_decode from 'jwt-decode';
 import BookingConfirmation from './components/BookingConfirm/BookingConfirm';
 import OffersAndDeals from './Pages/OfferPage';
 import ShowtimeMG from './Pages/showtimeMG';
+import ChangePasswordForm from './components/ChangePassword/ChangePasswordForm';
+import UpcomingBookingDetail from './components/UpcomingBookingDetail/UpcomingBookingDetail';
 
 
 const ProtectedRoute = ({ children }) => {
@@ -119,6 +121,9 @@ const AppContent = () => {
                 <Route path="/MMHeader" element={<MMHeader />} />
                 <Route path="/ShowtimeMG" element={<ShowtimeMG/>}/>
                 <Route path="/OfferPage" element={<OffersAndDeals/>}/>
+                <Route path="/ChangePasswordForm" element={<ChangePasswordForm/>} />
+                <Route path="/UpComingBooking" element={<UpcomingBookingDetail/>} />
+                
             </Routes>
             <Footer />
         </div>
