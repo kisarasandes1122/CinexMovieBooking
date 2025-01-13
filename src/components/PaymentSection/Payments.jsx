@@ -9,6 +9,8 @@ const Payments = () => {
     const location = useLocation();
     const { selectedSeats, totalPrice, selectedDate, selectedTime, showtimeSeatIds, showtimeId, movieTitle, userId } = location.state || {};
     const [discountedPrice, setDiscountedPrice] = useState(totalPrice)
+      const [paymentSuccess, setPaymentSuccess] = useState(false);
+
 
     return (
         <div className="payment-page">
@@ -21,7 +23,6 @@ const Payments = () => {
                     <h1 className="title">{movieTitle}</h1>
                     <p>Date: {selectedDate} | Time: {selectedTime}</p>
                     <p>Selected Seats: {selectedSeats ? selectedSeats.join(', ') : 'No seats selected'}</p>
-                     <p>User ID: {userId || 'No user ID'}</p>
                     <div className="summary-row summary-total">
                         <span>Total: </span>
                          <span>Rs. {discountedPrice}</span>
@@ -30,8 +31,21 @@ const Payments = () => {
 
                  <PromoCode setDiscountedPrice={setDiscountedPrice} totalPrice={totalPrice} />
                 <UserDetails />
-                <PaymentMethod />
-                
+                  {paymentSuccess ? (
+                    <div style={{ color: 'green' }}>Payment and Booking Successful!</div>
+                   ) : (
+                     <PaymentMethod
+                         discountedPrice={discountedPrice}
+                         movieTitle={movieTitle}
+                         selectedDate={selectedDate}
+                         selectedTime={selectedTime}
+                          selectedSeats={selectedSeats}
+                           userId={userId}
+                           showtimeId={showtimeId}
+                          showtimeSeatIds={showtimeSeatIds}
+                           setPaymentSuccess={setPaymentSuccess}
+                        />
+                    )}
             </div>
         </div>
     );
