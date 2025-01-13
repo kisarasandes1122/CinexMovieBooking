@@ -29,6 +29,7 @@ import UpcomingBookingDetail from './components/UpcomingBookingDetail/UpcomingBo
 import MovieBookingpage from './Pages/MovieBookingpage';
 import AdminSignin from './Pages/AdminSignIn';
 import MovieDetails from './Pages/MovieDetails';
+import OffersAndDeals from './components/OffersSection/OfferPage';
 
 const ProtectedRoute = ({ children }) => {
   const location = useLocation();
@@ -130,6 +131,7 @@ const AppContent = () => {
         <Route path="/ChangePasswordForm" element={<ChangePasswordForm />} />
         <Route path="/UpComingBooking" element={<UpcomingBookingDetail />} />
         <Route path="/MovieDetails" element={<MovieDetails />} />
+        <Route path="/OffersSection" element={<OffersAndDeals/>}/>
         
       </Routes>
       <Footer />
