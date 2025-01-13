@@ -30,8 +30,7 @@ const Navbar = ({ isLoggedIn }) => {
               {showDropdown && (
                 <div className="dropdown-menu">
                   <p>Kisara Sandes</p>
-                  <Link to="/UpComingBooking">Upcoming Movie Bookings</Link>
-                  <Link to="Bookinghistory">Movie Booking History</Link>
+                  <Link to="Bookinghistory">Movie Booking</Link>
                   <Link to="/ChangePasswordForm">Change Password</Link>
                   <Link to="/logout">Log Out</Link>
                 </div>
