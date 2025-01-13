@@ -1,0 +1,172 @@
+body{
+background-color: #141414;
+}
+
+.offers-page {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  padding: 40px 20px;
+  background-color: #141414;
+  min-height: 100vh;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.offers-page h1 {
+  text-align: left;
+  margin-bottom: 40px;
+  color: #f9f9f9;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}
+
+.offers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.offer-item {
+  display: flex;
+  padding: 24px;
+  border-radius: 12px;
+  background-color: #141414;
+  align-items: center;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.offer-item:hover {
+  background-color: #1a1a1a;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
+  border-color: #a10000;
+}
+
+.offer-text {
+  flex: 1;
+  padding-right: 30px;
+}
+
+.offer-text h3 {
+  margin: 0 0 12px 0;
+  font-size: 18px;
+  color: #f9f9f9;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  line-height: 1.4;
+}
+
+.offer-subtitle {
+  font-size: 15px;
+  color: #cccccc;
+  margin-bottom: 12px;
+  font-weight: 500;
+  letter-spacing: -0.2px;
+}
+
+.offer-description {
+  font-size: 14px;
+  color: #999999;
+  line-height: 1.6;
+  margin: 0;
+  white-space: pre-line;
+}
+
+.offer-image-container {
+  width: 160px;
+  height: 160px;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.offer-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+}
+
+.offer-item:hover .offer-image {
+  transform: scale(1.05);
+}
+
+/* Apply promo button styling */
+.apply-promo-button {
+  background-color: #a10000;
+  color: #f9f9f9;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.apply-promo-button:hover {
+  background-color: #c00000;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(161, 0, 0, 0.3);
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .offers-page {
+      padding: 20px 15px;
+  }
+
+  .offers-page h1 {
+      font-size: 24px;
+      margin-bottom: 30px;
+  }
+
+  .offer-item {
+      padding: 16px;
+  }
+
+  .offer-text {
+      padding-right: 16px;
+  }
+
+  .offer-image-container {
+      width: 100px;
+      height: 100px;
+  }
+
+  .offer-text h3 {
+      font-size: 16px;
+      margin-bottom: 8px;
+  }
+
+  .offer-subtitle {
+      font-size: 14px;
+      margin-bottom: 8px;
+  }
+
+  .offer-description {
+      font-size: 13px;
+      line-height: 1.5;
+  }
+}
+
+/* For extra small screens */
+@media (max-width: 480px) {
+  .offer-item {
+      flex-direction: column;
+      text-align: center;
+  }
+
+  .offer-text {
+      padding-right: 0;
+      padding-bottom: 16px;
+  }
+
+  .offer-image-container {
+      width: 140px;
+      height: 140px;
+  }
+}
