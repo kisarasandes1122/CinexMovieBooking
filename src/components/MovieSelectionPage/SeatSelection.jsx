@@ -36,9 +36,14 @@ const SeatSelection = () => {
                 const showtimeData = await showtimeResponse.json();
                 setShowtime(showtimeData);
 
+                // Log showtimeData.screenId here
+                console.log("showtimeData.screenId:", showtimeData.screenId);
 
-                // Fetch screen and theatre info
-                const screenResponse = await fetch(`${API_BASE_URL}/screens/${showtimeData.screenId}`);
+                const screenId = showtimeData.screenId._id; // Access the _id property
+
+                console.log("screenId", screenId);
+
+                 const screenResponse = await fetch(`${API_BASE_URL}/screens/${screenId}`);
                 if (!screenResponse.ok) {
                     throw new Error(`HTTP error! status: ${screenResponse.status} fetching screen`);
                 }
