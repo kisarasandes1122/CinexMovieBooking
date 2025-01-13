@@ -5,7 +5,6 @@ const OfferPage = () => {
   return (
     <div>
       <OfferPage/>
-      m
     </div>
   )
 }
