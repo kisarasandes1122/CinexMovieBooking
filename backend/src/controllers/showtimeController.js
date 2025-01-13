@@ -1,3 +1,4 @@
+// -- START OF FILE showtimeController.js --
 const Showtime = require('../models/showtimeModel');
 const Screen = require('../models/screenModel');
 const Seat = require('../models/seatModel');
@@ -307,6 +308,17 @@ const getShowtimeById = async (req, res) => {
     }
   };
 
+//Get all showtimes
+const getAllShowtimes = async (req, res) => {
+    try {
+        const showtimes = await Showtime.find({}).populate('movieId','title');
+        res.json(showtimes)
+    }
+    catch(err){
+       return res.status(500).json({message: "Error fetching showtimes", error: err.message})
+    }
+}
+
 // Delete a showtime by id.
 const deleteShowtimeById = async (req, res) => {
     try {
@@ -349,5 +361,8 @@ module.exports = {
     deleteShowtimeById,
     updateShowtimeById,
     getShowtimeSeatsByShowtimeId,
-    getShowtimeSeatsByShowtimeSeatId // Export the new controller
+    getShowtimeSeatsByShowtimeSeatId 
+    getShowtimeSeatsByShowtimeId, // Export the new function
+    getAllShowtimes //Export get all showtimes
 };
+

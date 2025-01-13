@@ -7,7 +7,8 @@ const {
     deleteShowtimeById,
     updateShowtimeById,
     getShowtimeSeatsByShowtimeId,
-    getShowtimeSeatsByShowtimeSeatId
+    getShowtimeSeatsByShowtimeSeatId, // Import the new controller
+    getAllShowtimes //Import the new controller to get all showtimes
 } = require('../controllers/showtimeController');
 
 
@@ -18,6 +19,8 @@ router.get('/search', getShowtimesByMovieTitleAndDate);
 router.post('/', createShowtime)
 // Get a showtime by Id
 router.get('/:id', getShowtimeById)
+// Get All showtimes
+router.get('/',getAllShowtimes)
  // Delete a showtime by ID
 router.delete('/:id', deleteShowtimeById)
 // update a showtime by ID.
