@@ -120,7 +120,7 @@ const AppContent = () => {
                 />
                 <Route path="/Contactus" element={<ContactUS />} />
                 <Route path="/MMHeader" element={<MMHeader />} />
-            <Route path="/showtimemgr" element={<ShowtimeManagement/>}/>
+                <Route path="/showtimeMG" element={<ShowtimeManagement/>}/>
             </Routes>
             <Footer />
         </div>
