@@ -59,7 +59,8 @@ const Movies = () => {
               <p>{movie.duration} | {movie.releaseDate}</p>
               <p>{movie.description}</p>
               <div className="moviel-btns">
-                <button onClick={() => handleClick(movie.title)}>View Details</button>
+                <button onClick={() => handleClick(movie.title)}>Buy Tickets</button>
+                <button onClick={() => handleClick(movie.title)}>Watch Trailer</button>
               </div>
             </div>
           </div>
