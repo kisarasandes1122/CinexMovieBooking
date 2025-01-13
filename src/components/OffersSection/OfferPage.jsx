@@ -1,7 +1,7 @@
 import React from 'react';
 import './OfferPage.css';
 
-function OffersAndDeals() {
+function Offerspage() {
   const offers = [
     {
       id: 1,
@@ -25,13 +25,6 @@ function OffersAndDeals() {
       subtitle: 'AT SELECTED SCOPE CINEMAS THEATRES',
       description: 'Offer Valid from 10th January to 28th February 2025\nAvailable Exclusively For HSBC Live+\nFor Website & Over-the-Counter Purchases',
       imageUrl: 'deal3.png',
-      moreInfoLink: '#',
-    },
-    {
-      id: 4,
-      title: 'Exclusive Offer for HSBC Live+ Credit Card Holders: Buy One Movie Ticket, Get One Free!',
-      description:"",
-      imageUrl: 'deal4_placeholder.png',
       moreInfoLink: '#',
     },
   ];
@@ -62,4 +55,4 @@ function OffersAndDeals() {
   );
 }
 
-export default OffersAndDeals;
+export default Offerspage;
