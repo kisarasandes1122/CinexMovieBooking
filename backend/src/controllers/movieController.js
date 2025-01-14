@@ -13,9 +13,24 @@ function createSlug(title) {
 // Get Now Showing Movies
 const getNowShowingMovies = async (req, res) => {
   try {
-    const now = new Date(); // Current date and time
-    const movies = await Movie.find();
-     const nowShowing = movies.filter(movie => new Date(movie.releaseDate) <= now);
+    const {title, genre} = req.query;
+    const now = new Date();
+    let query = {};
+
+    if(title) {
+         query.title = {$regex: new RegExp(title, 'i')};
+    }
+     if(genre) {
+       query.genres = {$regex: new RegExp(genre, 'i')};
+      }
+
+    const movies = await Movie.find(query);
+    const nowShowing = movies.filter(movie => {
+      const releaseDate = new Date(movie.releaseDate);
+      return !isNaN(releaseDate) && releaseDate <= now;
+    });
+
+
      res.json(nowShowing);
     }
     catch(err){
@@ -26,10 +41,23 @@ const getNowShowingMovies = async (req, res) => {
 // Get Coming Soon Movies
 const getComingSoonMovies = async (req, res) => {
     try {
-        const now = new Date(); // Current date and time
-        const movies = await Movie.find();
-         const comingSoon = movies.filter(movie => new Date(movie.releaseDate) > now);
-         res.json(comingSoon);
+      const {title, genre} = req.query;
+      const now = new Date();
+        let query = {};
+         if(title) {
+           query.title = {$regex: new RegExp(title, 'i')};
+      }
+       if(genre) {
+         query.genres = {$regex: new RegExp(genre, 'i')};
+      }
+
+        const movies = await Movie.find(query);
+         const comingSoon = movies.filter(movie => {
+           const releaseDate = new Date(movie.releaseDate);
+            return !isNaN(releaseDate) && releaseDate > now;
+          });
+
+        res.json(comingSoon);
        }
       catch(err){
         res.status(500).json({message: err.message});

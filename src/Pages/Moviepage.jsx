@@ -7,7 +7,6 @@ import Movies from '../components/MovieList/Movies';
 const Moviepage = () => {
   return (
     <div>
-      <MovieListSearchBar/>
       <Movies/>
     </div>
   );
