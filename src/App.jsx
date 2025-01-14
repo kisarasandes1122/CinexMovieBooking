@@ -6,7 +6,7 @@ import {
   Route,
   useNavigate,
   useLocation,
-  Navigate
+  Navigate,
 } from 'react-router-dom';
 import Home1 from './Pages/home';
 import Navbar from './components/Navbar/Navbar';
@@ -30,6 +30,8 @@ import AdminSignin from './Pages/AdminSignIn';
 import AboutUs from './Pages/AboutUs';
 import Bookinghistory from './Pages/Bookinghistory';
 import OffersPromotions from './Pages/OffersPromotions';
+
+import { Oval } from 'react-loader-spinner';
 
 const ProtectedRoute = ({ children }) => {
   const location = useLocation();
@@ -67,6 +69,7 @@ const App = () => {
 
 const AppContent = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true); 
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -85,6 +88,12 @@ const AppContent = () => {
         handleLogout();
       }
     }
+
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1500);
+
+    return () => clearTimeout(timer);
   }, []);
 
   const handleLoginSuccess = (token) => {
@@ -94,7 +103,6 @@ const AppContent = () => {
     navigate(from, { replace: true });
   };
 
-
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
@@ -102,10 +110,25 @@ const AppContent = () => {
     navigate('/', { replace: true });
   };
 
+  if (loading) {
+    // Show a loading animation while the app is initializing
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <Oval
+          height={80}
+          width={80}
+          color="blue"
+          ariaLabel="loading"
+          secondaryColor="lightblue"
+          strokeWidth={2}
+        />
+      </div>
+    );
+  }
 
   return (
     <div>
-      <Navbar isLoggedIn={isLoggedIn} handleLogout={handleLogout}  setIsLoggedIn={setIsLoggedIn}/>
+      <Navbar isLoggedIn={isLoggedIn} handleLogout={handleLogout} setIsLoggedIn={setIsLoggedIn} />
       <Routes>
         <Route path="/" element={<Home1 />} />
         <Route path="/booking/:id" element={<MovieBookingpage />} />
@@ -114,7 +137,7 @@ const AppContent = () => {
         <Route path="/SignInform" element={<SignInform onLogin={handleLoginSuccess} />} />
         <Route path="/SeatSelection" element={<SeatSelection />} />
         <Route path="/AdminDashboard" element={<AdminDash />} />
-         <Route path="/AdminSignIn" element={<AdminSignin/>} />
+        <Route path="/AdminSignIn" element={<AdminSignin />} />
         <Route path="/Moviemanagement" element={<Moviemanagement />} />
         <Route path="/TheatreManage" element={<TheatreManage />} />
         <Route path="/BookingConfirmation" element={<BookingConfirmation />} />
@@ -126,13 +149,13 @@ const AppContent = () => {
             </ProtectedRoute>
           }
         />
-        <Route path="/Aboutus" element={<AboutUs/>} />
+        <Route path="/Aboutus" element={<AboutUs />} />
         <Route path="/MMHeader" element={<MMHeader />} />
         <Route path="/ShowtimeMG" element={<ShowtimeMG />} />
         <Route path="/ChangePasswordForm" element={<ChangePasswordForm />} />
         <Route path="/Booking" element={<UpcomingBookingDetail />} />
-        <Route path="/OffersSection" element={<OffersPromotions/>}/>
-        <Route path="/Bookinghistory" element={<Bookinghistory/>}/>
+        <Route path="/OffersSection" element={<OffersPromotions />} />
+        <Route path="/Bookinghistory" element={<Bookinghistory />} />
       </Routes>
       <Footer />
     </div>
