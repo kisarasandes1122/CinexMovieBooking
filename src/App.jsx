@@ -130,7 +130,7 @@ const AppContent = () => {
         <Route path="/MMHeader" element={<MMHeader />} />
         <Route path="/ShowtimeMG" element={<ShowtimeMG />} />
         <Route path="/ChangePasswordForm" element={<ChangePasswordForm />} />
-        <Route path="/UpComingBooking" element={<UpcomingBookingDetail />} />
+        <Route path="/Booking" element={<UpcomingBookingDetail />} />
         <Route path="/OffersSection" element={<OffersPromotions/>}/>
         <Route path="/Bookinghistory" element={<Bookinghistory/>}/>
       </Routes>

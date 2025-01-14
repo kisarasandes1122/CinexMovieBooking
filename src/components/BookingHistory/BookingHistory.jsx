@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import './BookingHistory.css';
+import { useNavigate } from 'react-router-dom';
 
 function BookingHistoryP() {
     const [bookings, setBookings] = useState([]);
     const [userId, setUserId] = useState(null);
-
+    const navigate = useNavigate();
 
     useEffect(() => {
         // Retrieve userId from localStorage when the component mounts
@@ -36,6 +37,13 @@ function BookingHistoryP() {
 
   }, [userId]);
 
+
+  const handleBookingClick = (bookingId) => {
+    navigate(`/Booking?bookingId=${bookingId}`);
+  };
+
+
+
     return (
         <div className="bkh-body">
             <div className="bkh-container">
@@ -44,7 +52,12 @@ function BookingHistoryP() {
                     <div className="bkh-title-line"></div>
                     <div className="bkh-bookings-list">
                         {bookings.map((booking) => (
-                            <div key={booking._id} className="bkh-booking-card">
+                             <div
+                                key={booking._id}
+                                className="bkh-booking-card"
+                                onClick={() => handleBookingClick(booking._id)}
+                                style={{ cursor: 'pointer' }}
+                            >
                                 <div>
                                     <div className="bkh-movie-title">{booking.showtimeId?.movieId?.title}</div>
                                     <div className="bkh-cinema">{booking.showtimeId?.screenId?.screenNumber}</div>
