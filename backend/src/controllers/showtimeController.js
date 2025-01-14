@@ -399,7 +399,6 @@ const deleteShowtimeByShowtimeId = async (req, res) => {
 };
 
 
-
 // Update a showtime
 const updateShowtimeById = async (req, res) => {
     try {
@@ -419,6 +418,19 @@ const updateShowtimeById = async (req, res) => {
     }
 }
 
+// New controller to get showtime count starting from today
+const getShowtimeCountFromToday = async (req, res) => {
+    try {
+       const today = startOfDay(new Date());
+
+        const count = await Showtime.countDocuments({
+            start_date: { $gte: today }
+        });
+        res.json({ count });
+    } catch (err) {
+        res.status(500).json({ message: "Error fetching showtime count", error: err.message });
+    }
+};
 
 module.exports = {
     getShowtimesByMovieTitleAndDate,
@@ -430,5 +442,6 @@ module.exports = {
     getShowtimeSeatsByShowtimeSeatId,
     getAllShowtimes,
     getAllShowtimesWithAllDetails,
-    deleteShowtimeByShowtimeId // new controller
+    deleteShowtimeByShowtimeId, // new controller
+    getShowtimeCountFromToday // new controller
 };

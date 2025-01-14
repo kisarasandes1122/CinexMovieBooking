@@ -64,9 +64,19 @@ const loginUser = async (req, res) => {
     }
   };
 
+  // Get total user count
+const getTotalUserCount = async (req, res) => {
+    try {
+        const count = await User.countDocuments();
+         res.json({ count });
+    } catch (err) {
+          res.status(500).json({ message: err.message });
+      }
+ };
 
 module.exports = {
   registerUser,
   loginUser,
   getUserDetails,
+  getTotalUserCount // ADD this line
 };

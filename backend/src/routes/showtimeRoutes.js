@@ -10,7 +10,8 @@ const {
     getShowtimeSeatsByShowtimeSeatId,
     getAllShowtimes,
     getAllShowtimesWithAllDetails,
-    deleteShowtimeByShowtimeId // New Controller
+    deleteShowtimeByShowtimeId, // New Controller
+    getShowtimeCountFromToday // new controller
 } = require('../controllers/showtimeController');
 
 
@@ -40,6 +41,10 @@ router.get('/:showtimeId/seats', getShowtimeSeatsByShowtimeId); //New route
 
 // New route to get showtime seats by showtimeSeatIds
 router.get('/seats/search', getShowtimeSeatsByShowtimeSeatId);
+
+
+//Get showtime counts from today onwards
+router.get('/count/today', getShowtimeCountFromToday) // new route
 
 
 module.exports = router;

@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './AdminDash.css';
 
 const AdminDash = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [totalMovies, setTotalMovies] = useState(0);
+    const [totalUsers, setTotalUsers] = useState(0);
+    const [activeShowtimes, setActiveShowtimes] = useState(0);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const toggleSidebar = () => {
@@ -13,6 +18,57 @@ const AdminDash = () => {
   const handleNavigation = (path) => {
     navigate(path);
   };
+
+    useEffect(() => {
+        const fetchData = async () => {
+            setIsLoading(true);
+            setError(null);
+            try {
+                // Fetch Total Movies
+                const moviesResponse = await fetch('http://localhost:27017/api/movies/count');
+                if (!moviesResponse.ok) {
+                    throw new Error(`HTTP error! status: ${moviesResponse.status}`);
+                }
+                const moviesData = await moviesResponse.json();
+                setTotalMovies(moviesData.count);
+
+
+                // Fetch Total Users
+                const usersResponse = await fetch('http://localhost:27017/api/auth/count');
+                if (!usersResponse.ok) {
+                    throw new Error(`HTTP error! status: ${usersResponse.status}`);
+                }
+                const usersData = await usersResponse.json();
+                setTotalUsers(usersData.count);
+
+
+                // Fetch Active Showtimes
+                const showtimesResponse = await fetch('http://localhost:27017/api/showtimes/count/today');
+                if (!showtimesResponse.ok) {
+                    throw new Error(`HTTP error! status: ${showtimesResponse.status}`);
+                }
+                const showtimesData = await showtimesResponse.json();
+                setActiveShowtimes(showtimesData.count);
+
+
+            } catch (err) {
+                setError(err.message)
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    if (isLoading) {
+        return <div>Loading....</div>
+    }
+
+    if (error) {
+        return <div>Error: {error}</div>
+    }
+
 
   return (
     <div className="dashboard">
@@ -39,9 +95,9 @@ const AdminDash = () => {
               <section className="section">
                 <h2 className="section-title">Quick Insight</h2>
                 <div className="stats-grid">
-                  <Card title="Total Movies" value="15" />
-                  <Card title="Active Showtimes" value="3" />
-                  <Card title="Total Users" value="12" />
+                    <Card title="Total Movies" value={totalMovies} />
+                    <Card title="Active Showtimes" value={activeShowtimes} />
+                    <Card title="Total Users" value={totalUsers} />
                 </div>
               </section>
             </div>

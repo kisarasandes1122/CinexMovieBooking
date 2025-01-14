@@ -48,6 +48,17 @@ const getComingSoonMovies = async (req, res) => {
     }
  }
 
+ // Get total movie count
+ const getTotalMovieCount = async (req, res) => {
+    try {
+        const count = await Movie.countDocuments();
+         res.json({ count });
+    } catch (err) {
+          res.status(500).json({ message: err.message });
+      }
+ };
+
+
 // Get a movie by title
 const getMovieByTitle = async (req, res) => {
     try {
@@ -137,5 +148,6 @@ module.exports = {
     getMovieById,
     deleteMovieById,
     updateMovieById,
-    getMovieByTitle
+    getMovieByTitle,
+    getTotalMovieCount // ADD this line
   };
