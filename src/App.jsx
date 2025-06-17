@@ -12,7 +12,7 @@ import Home1 from './Pages/Home';
 import Navbar from './components/Navbar/Navbar';
 import Footer from './components/Footer/Footer';
 import RegistrationForm from './components/RegistrationForm/RegistrationForm';
-import Moviepage from './Pages/MoviePage';
+import Moviepage from './Pages/Moviepage';
 import SignInform from './components/SignInform/SignIn';
 import SeatSelection from './components/MovieSelectionPage/SeatSelection';
 import Moviemanagement from './Pages/Moviemanagement';
