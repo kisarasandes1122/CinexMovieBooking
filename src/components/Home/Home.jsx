@@ -14,7 +14,7 @@ const Home = () => {
             setLoading(true);
             setError(null);
           try {
-            const response = await axios.get('http://localhost:27017/api/movies/now-showing');
+            const response = await axios.get('https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/movies/now-showing');
             if (response.data && response.data.length > 0) {
                setMovies(response.data);
             } else {
