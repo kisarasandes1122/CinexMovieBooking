@@ -194,7 +194,7 @@ function ShowtimeMG() {
                 throw new Error(message);
             }
           //Refresh the data from backend
-            const response_details = await fetch('http://localhost:27017/api/showtimes/all/details');
+            const response_details = await fetch('https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/showtimes/all/details');
             if (!response_details.ok) {
                 throw new Error(`HTTP error! status: ${response_details.status}`);
             }
