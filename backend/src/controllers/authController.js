@@ -1,13 +1,13 @@
 const User = require('../models/userModel');
-const bcrypt = require('bcrypt');
+const CryptoJS = require('crypto-js');
 const jwt = require('jsonwebtoken');
 
 const registerUser = async (req, res) => {
     try {
       const { email, password, firstName, lastName, mobile, birthDate, gender } = req.body;
 
-      // Hash the password
-      const hashedPassword = await bcrypt.hash(password, 10);
+      // Hash the password using crypto-js
+      const hashedPassword = CryptoJS.SHA256(password + 'salt').toString();
       const user = new User({
          email,
         password: hashedPassword,
@@ -33,7 +33,9 @@ const loginUser = async (req, res) => {
         return res.status(401).json({ message: 'Invalid credentials' });
        }
 
-        const passwordMatch = await bcrypt.compare(password, user.password)
+        // Compare password using crypto-js
+        const hashedPassword = CryptoJS.SHA256(password + 'salt').toString();
+        const passwordMatch = hashedPassword === user.password;
         if(!passwordMatch){
              return res.status(401).json({ message: 'Invalid credentials' });
         }
