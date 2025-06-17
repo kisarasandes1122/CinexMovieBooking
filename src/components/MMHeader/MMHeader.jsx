@@ -45,7 +45,7 @@ const MMHeader = () => {
           setLoading(true);
           setError(null);
           try {
-              const response = await axios.get("http://localhost:27017/api/movies");
+              const response = await axios.get("https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/movies");
               setMovies(response.data);
           }
           catch (err) {
@@ -90,7 +90,7 @@ const MMHeader = () => {
       e.preventDefault();
       setError(null);
       try {
-          const response = await axios.post("http://localhost:27017/api/movies", formData);
+          const response = await axios.post("https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/movies", formData);
           setMovies((prevMovies) => [...prevMovies, response.data]);
           handleGoToList(); // Go to list view
          } catch (err) {
