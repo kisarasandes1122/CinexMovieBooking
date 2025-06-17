@@ -32,7 +32,7 @@ function TheatreManage() {
           setLoading(true)
           setError(null);
       try {
-        const response = await axios.post("http://localhost:27017/api/theatres", newTheatre);
+        const response = await axios.post("https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/theatres", newTheatre);
          setTheatreData((prevData) => [...prevData, response.data]);
          setPopup({ type: null, data: null });
       } catch (error) {
@@ -47,7 +47,7 @@ function TheatreManage() {
          setLoading(true)
          setError(null);
       try {
-        const response = await axios.post("http://localhost:27017/api/screens", newScreen);
+        const response = await axios.post("https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/screens", newScreen);
          // Update theatreData to reflect newly added screen.
         const updatedTheatreData = theatreData.map(theatre => {
             if(theatre._id === newScreen.theatreId){
@@ -70,7 +70,7 @@ function TheatreManage() {
         setLoading(true)
          setError(null);
         try{
-           await axios.delete(`http://localhost:27017/api/theatres/${theatreId}`)
+           await axios.delete(`https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/theatres/${theatreId}`)
           setTheatreData((prevData) => prevData.filter((t) => t._id !== theatreId))
         }
         catch(err){
