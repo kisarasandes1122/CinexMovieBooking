@@ -37,10 +37,16 @@ const Movies = () => {
         }
 
         const data = await response.json();
-        setMovies(data);
+        // Ensure data is an array before setting movies
+        if (Array.isArray(data)) {
+          setMovies(data);
+        } else {
+          setMovies([]);
+        }
         }
         catch (error) {
             console.error('Error fetching movies', error);
+            setMovies([]); // Set movies to empty array on error
         }
     }
 

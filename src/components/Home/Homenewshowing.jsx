@@ -31,9 +31,15 @@ const Homenowshowing = () => {
       setError(null);
       try {
          const response = await axios.get('https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/movies/now-showing/'); // Replace with your backend URL
-         setMovies(response.data);
+         // Ensure response.data is an array before setting movies
+         if (Array.isArray(response.data)) {
+           setMovies(response.data);
+         } else {
+           setMovies([]);
+         }
       } catch (err) {
           setError(err.message);
+          setMovies([]); // Set movies to empty array on error
       } finally {
            setLoading(false);
       }
