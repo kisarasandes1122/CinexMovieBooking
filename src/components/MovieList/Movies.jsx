@@ -15,9 +15,9 @@ const Movies = () => {
         try {
         let url;
         if (filter === "Now Showing") {
-           url = `http://localhost:27017/api/movies/now-showing`;
+           url = `https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/movies/now-showing`;
         } else {
-           url = `http://localhost:27017/api/movies/coming-soon`;
+           url = `https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/movies/coming-soon`;
         }
 
         const queryParams = new URLSearchParams();
