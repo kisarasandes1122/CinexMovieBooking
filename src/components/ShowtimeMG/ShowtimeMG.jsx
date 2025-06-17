@@ -29,10 +29,10 @@ function ShowtimeMG() {
               setError(null);
            try{
                const [showtimeResponse, movieResponse, screenResponse, theatreResponse] = await Promise.all([
-                      fetch('http://localhost:27017/api/showtimes/all/details'),
-                      fetch('http://localhost:27017/api/movies'),
-                      fetch('http://localhost:27017/api/screens'),
-                      fetch('http://localhost:27017/api/theatres/with-screens')
+                      fetch('https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/showtimes/all/details'),
+                      fetch('https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/movies'),
+                      fetch('https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/screens'),
+                      fetch('https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/theatres/with-screens')
                    ]);
                 if(!showtimeResponse.ok){
                      throw new Error(`HTTP error! status: ${showtimeResponse.status}`);
@@ -168,7 +168,7 @@ function ShowtimeMG() {
             }
             const data = await response.json();
             //Refresh the data from backend
-            const response_details = await fetch('http://localhost:27017/api/showtimes/all/details');
+            const response_details = await fetch('https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/showtimes/all/details');
             if (!response_details.ok) {
                 throw new Error(`HTTP error! status: ${response_details.status}`);
             }
@@ -186,7 +186,7 @@ function ShowtimeMG() {
 
     const handleDelete = async (id) => {
       try {
-           const response = await fetch(`http://localhost:27017/api/showtimes/delete/${id}`, {
+           const response = await fetch(`https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/showtimes/delete/${id}`, {
                 method: 'DELETE'
             });
             if (!response.ok) {
