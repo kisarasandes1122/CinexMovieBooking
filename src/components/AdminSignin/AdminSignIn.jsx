@@ -32,7 +32,7 @@ const AdminSignIn = () => {
         }
 
         try {
-            const response = await fetch("http://localhost:27017/api/auth/login", {
+            const response = await fetch("https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/auth/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
