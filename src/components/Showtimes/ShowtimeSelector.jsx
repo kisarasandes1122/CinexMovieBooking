@@ -24,7 +24,7 @@ const ShowtimeSelector = () => {
     const [movieTitle, setMovieTitle] = useState('');
     const [screens, setScreens] = useState({});
     const [theatres, setTheatres] = useState({});
-    const API_BASE_URL = 'http://localhost:27017/api';
+    const API_BASE_URL = 'https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api';
 
 
     useEffect(() => {
