@@ -25,7 +25,7 @@ const AdminDash = () => {
             setError(null);
             try {
                 // Fetch Total Movies
-                const moviesResponse = await fetch('http://localhost:27017/api/movies/count');
+                const moviesResponse = await fetch('https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/movies/count');
                 if (!moviesResponse.ok) {
                     throw new Error(`HTTP error! status: ${moviesResponse.status}`);
                 }
@@ -34,7 +34,7 @@ const AdminDash = () => {
 
 
                 // Fetch Total Users
-                const usersResponse = await fetch('http://localhost:27017/api/auth/count');
+                const usersResponse = await fetch('https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/auth/count');
                 if (!usersResponse.ok) {
                     throw new Error(`HTTP error! status: ${usersResponse.status}`);
                 }
@@ -43,7 +43,7 @@ const AdminDash = () => {
 
 
                 // Fetch Active Showtimes
-                const showtimesResponse = await fetch('http://localhost:27017/api/showtimes/count/today');
+                const showtimesResponse = await fetch('https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/showtimes/count/today');
                 if (!showtimesResponse.ok) {
                     throw new Error(`HTTP error! status: ${showtimesResponse.status}`);
                 }
