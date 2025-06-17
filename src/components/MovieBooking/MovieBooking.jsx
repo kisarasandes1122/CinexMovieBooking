@@ -27,7 +27,7 @@ const MovieBooking = () => {
             setLoading(true);
             setError(null);
             try {
-                const response = await fetch(`http://localhost:27017/api/movies`);
+                const response = await fetch(`https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/movies`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
