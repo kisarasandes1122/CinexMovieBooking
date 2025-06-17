@@ -15,7 +15,7 @@ function TheatreManage() {
           setLoading(true)
           setError(null);
           try{
-             const response = await axios.get('http://localhost:27017/api/theatres/with-screens');
+             const response = await axios.get('https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/theatres/with-screens');
              setTheatreData(response.data)
           }
           catch(err){
