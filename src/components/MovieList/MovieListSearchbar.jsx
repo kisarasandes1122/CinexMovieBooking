@@ -10,7 +10,7 @@ const MovieListSearchBar = ({ onSearch }) => {
    useEffect(() => {
      const fetchGenres = async () => {
       try {
-          const response = await fetch('http://localhost:27017/api/movies') // Fetch all movies to get distinct genres
+          const response = await fetch('https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/movies') // Fetch all movies to get distinct genres
           if (!response.ok) {
             throw new Error('Failed to fetch movies for genres');
           }
