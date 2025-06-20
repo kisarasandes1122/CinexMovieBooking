@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './ShowtimeSelector.css';
-import { format, addDays, isSameDay, startOfDay, parse } from 'date-fns';
+import { format, addDays, isSameDay, startOfDay, parse, isValid } from 'date-fns';
 import { useParams } from 'react-router-dom';
 import { apiService } from '../../utils/axios';
 import { handleApiError } from '../../utils/errorHandler';
@@ -122,25 +122,42 @@ const ShowtimeSelector = () => {
 
 
             // Format the date before using it in the API call
-            const dateString = format(parse(selectedDateObj.date, 'MM/dd', new Date()), 'yyyy-MM-dd');
-             console.log("dateString before fetch:", dateString)
-
-
             try {
+                const parsedDate = parse(selectedDateObj.date, 'MM/dd', new Date());
+                if (!isValid(parsedDate)) {
+                    const message = `Invalid date format: ${selectedDateObj.date}`;
+                    setError(message);
+                    console.error(message);
+                    setLoading(false);
+                    return;
+                }
+                const dateString = format(parsedDate, 'yyyy-MM-dd');
+                console.log("dateString before fetch:", dateString);
+
                 const response = await apiService.showtimes.search({
                     title: movieTitle,
                     date: dateString
                 });
                 const data = response.data;
-                 const mappedShowtimes = data.map((showtime) => {
-                    const showtimeStartDate = startOfDay(new Date(showtime.start_date));
-                     const formattedDate = format(showtimeStartDate, 'yyyy-MM-dd')
-                     console.log("Formatted Date from API: ", formattedDate)
-                    return {
-                        ...showtime,
-                        start_date: formattedDate
-                    };
-                });
+                const mappedShowtimes = data.map((showtime) => {
+                    try {
+                        const showtimeStartDate = new Date(showtime.start_date);
+                        if (!isValid(showtimeStartDate)) {
+                            console.warn('Invalid start_date from API:', showtime.start_date);
+                            return null;
+                        }
+                        const formattedStartDate = startOfDay(showtimeStartDate);
+                        const formattedDate = format(formattedStartDate, 'yyyy-MM-dd');
+                        console.log("Formatted Date from API: ", formattedDate);
+                        return {
+                            ...showtime,
+                            start_date: formattedDate
+                        };
+                    } catch (error) {
+                        console.warn('Error processing showtime date:', error, showtime);
+                        return null;
+                    }
+                }).filter(Boolean); // Remove null entries
                 setShowtimes(mappedShowtimes);
             } catch (err) {
                 const errorMessage = handleApiError(err, 'Failed to fetch showtimes');
@@ -164,11 +181,23 @@ const ShowtimeSelector = () => {
     };
 
     if (loading) {
-        return <div>Loading showtimes...</div>;
+        return (
+            <div className="showtime-selector">
+                <div className="loading-spinner">
+                    <div>🎬 Loading showtimes...</div>
+                </div>
+            </div>
+        );
     }
 
     if (error) {
-        return <div>Error: {error}</div>;
+        return (
+            <div className="showtime-selector">
+                <div className="error-message">
+                    ⚠️ {error}
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -181,7 +210,9 @@ const ShowtimeSelector = () => {
                         className={`date-button ${selectedDate === date.id ? 'selected' : ''}`}
                         onClick={() => handleDateClick(date.id)}
                     >
-                        <div className="date-label">{date.label}</div>
+                        <div className="date-label">
+                            {date.id === 0 ? 'TODAY' : date.id === 1 ? 'TOMORROW' : `DAY ${date.id + 1}`}
+                        </div>
                         <div className="date-value">{date.date}</div>
                     </button>
                 ))}
@@ -198,21 +229,34 @@ const ShowtimeSelector = () => {
                             return acc;
                         }
 
-                         const showtimeDate = parse(
-                            `${showtime.start_date}T${showtime.start_time}`,
-                             'yyyy-MM-dd\'T\'h:mm a',
+                        // Validate showtime data before parsing
+                        if (!showtime.start_date || !showtime.start_time) {
+                            console.warn('Invalid showtime data:', showtime);
+                            return acc;
+                        }
+
+                        try {
+                            const showtimeDate = parse(
+                                `${showtime.start_date}T${showtime.start_time}`,
+                                'yyyy-MM-dd\'T\'HH:mm',
                                 new Date()
                             );
-                         const timeFormat = format(showtimeDate, 'h:mm a');
+                            
+                            // Validate the parsed date
+                            if (!isValid(showtimeDate)) {
+                                console.warn('Invalid parsed date for showtime:', showtime);
+                                return acc;
+                            }
+                            
+                            const timeFormat = format(showtimeDate, 'h:mm a');
                             const screenFormat = screen.format;
 
-                           if (!acc[theatre.location]) {
+                            if (!acc[theatre.location]) {
                                 acc[theatre.location] = {
                                     name: theatre.location,
                                     formats: {},
                                 };
                             }
-
 
                             if(!acc[theatre.location].formats[screenFormat]){
                                  acc[theatre.location].formats[screenFormat] = {
@@ -220,10 +264,13 @@ const ShowtimeSelector = () => {
                                      times: []
                                  }
                             }
-                              acc[theatre.location].formats[screenFormat].times.push({
+                            acc[theatre.location].formats[screenFormat].times.push({
                                 time: timeFormat,
                                 showtime: showtime,
                             });
+                        } catch (error) {
+                            console.warn('Error parsing showtime date:', error, showtime);
+                        }
 
                         return acc;
                     }, {})).map((theater) => (
@@ -250,7 +297,10 @@ const ShowtimeSelector = () => {
                     </div>
                     )) 
                     :  
-                    <div>No Showtimes available for selected date</div>
+                    <div className="no-showtimes">
+                        🎭 No showtimes available for the selected date.<br/>
+                        Please try another date.
+                    </div>
                 }
             </div>
         </div>

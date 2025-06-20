@@ -146,7 +146,7 @@ const SeatSelection = () => {
 
             <div className="seating">
                 {rows.map((row) => (
-                    <div key={row} className="row">
+                    <div key={row} className="row" data-row={row}>
                         {seats[row].map((seat) => {
                             const seatClass = `seat ${
                                 seat.status === 'booked'
@@ -168,6 +168,21 @@ const SeatSelection = () => {
                         })}
                     </div>
                 ))}
+            </div>
+
+            <div className="legend">
+                <div className="legend-item">
+                    <div className="legend-seat legend-available"></div>
+                    <span>Available</span>
+                </div>
+                <div className="legend-item">
+                    <div className="legend-seat legend-selected"></div>
+                    <span>Selected</span>
+                </div>
+                <div className="legend-item">
+                    <div className="legend-seat legend-booked"></div>
+                    <span>Booked</span>
+                </div>
             </div>
 
             <div className="summary">
