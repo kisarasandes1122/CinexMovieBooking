@@ -62,20 +62,35 @@
   padding: 0.75rem 1.5rem;
   border-radius: 4px;
   min-width: 120px;
-  background: var(--button-gray);
-  color: var(--text-primary);
+  border: none;
+  cursor: pointer;
   transition: background-color 0.2s, transform 0.2s;
   font-size: 0.9rem;
 }
 
-.date-button.selected,
-.time-button.selected {
+.date-button {
+  background: var(--button-gray);
+  color: var(--text-primary);
+}
+
+.time-button {
+  background: #F00000;
+  color: white;
+}
+
+.date-button.selected {
   background: var(--accent-red);
   transform: scale(1.05);
 }
 
+.time-button.selected {
+  background: #FFD700;
+  color: #1F1F1F;
+  transform: scale(1.05);
+}
+
 .time-button:hover {
-  background: var(--accent-red);
+  background: #CC0000;
 }
 
 /* Theaters and Formats */
@@ -186,3 +201,4 @@
     font-size: 0.85rem;
   }
 }
+

@@ -1,49 +1,138 @@
-.movie-details{
-    display: flex;
-      gap: 2rem;
-      margin-bottom: 3rem;
-      justify-content: center;
-      width: 70%;
-      margin-left: 9rem;
+/* Modern Movie Details Component Styles */
+.movie-details {
+  display: flex;
+  gap: 2.5rem;
+  align-items: flex-start;
+  width: 100%;
+  margin: 0;
+}
+
+.movie-poster {
+  width: 240px;
+  height: 360px;
+  border-radius: 16px;
+  object-fit: cover;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.movie-poster:hover {
+  transform: scale(1.02);
+}
+
+.movie-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.movie-info h1 {
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: white;
+  margin: 0;
+  line-height: 1.1;
+  background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.movie-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.movie-meta span {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dot {
+  display: none; /* Hide dots as we're using card-like design */
+}
+
+.movie-genre {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 16px 20px;
+  background: rgba(115, 16, 16, 0.1);
+  border: 1px solid rgba(115, 16, 16, 0.3);
+  border-radius: 12px;
+}
+
+.movie-genre span:first-child {
+  color: #731010;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.movie-genre span:last-child {
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .movie-details {
+    flex-direction: column;
+    gap: 2rem;
+    align-items: center;
+    text-align: center;
   }
-    
-    .movie-poster {
-      width: 200px;
-      height: 300px;
-      border-radius: 8px;
-    }
-    
-    .movie-info {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      width: 530px;
-    }
-    
-    .movie-info h1 {
-      font-size: 2.5rem;
-      font-weight: bold;
-      color: #ffffff;
-    }
-    
-    .movie-meta {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: var(--text-secondary);
-    }
-    
-    .dot {
-      font-size: 0.5rem;
-      vertical-align: middle;
-    }
-    
-    .movie-genre {
-      color: var(--text-secondary);
-    }
-    
-    .movie-genre span {
-      color: var(--text-primary);
-      font-weight: 500;
-    }
+
+  .movie-poster {
+    width: 200px;
+    height: 300px;
+  }
+
+  .movie-info {
+    align-items: center;
+    width: 100%;
+  }
+
+  .movie-info h1 {
+    font-size: 2.2rem;
+    text-align: center;
+  }
+
+  .movie-meta {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .movie-details {
+    gap: 1.5rem;
+  }
+
+  .movie-poster {
+    width: 180px;
+    height: 270px;
+  }
+
+  .movie-info h1 {
+    font-size: 1.8rem;
+  }
+
+  .movie-meta span {
+    font-size: 0.9rem;
+    padding: 6px 12px;
+  }
+
+  .movie-genre {
+    padding: 12px 16px;
+  }
+}
   
