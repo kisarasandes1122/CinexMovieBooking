@@ -154,7 +154,7 @@ const AppContent = () => {
         <Route path="/ShowtimeMG" element={<ShowtimeMG />} />
         <Route path="/ChangePasswordForm" element={<ChangePasswordForm />} />
         <Route path="/Booking" element={<UpcomingBookingDetail />} />
-        <Route path="/OffersSection" element={<OffersPromotions />} />
+        <Route path="/OffersPromotions" element={<OffersPromotions />} />
         <Route path="/Bookinghistory" element={<Bookinghistory />} />
       </Routes>
       <Footer />
