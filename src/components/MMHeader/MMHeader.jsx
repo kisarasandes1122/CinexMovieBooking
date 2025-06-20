@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import "./MMHeader.css";
-import axios from "axios";
+import { apiService } from "../../utils/axios";
+import { handleApiError } from "../../utils/errorHandler";
 
 const MMHeader = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -45,11 +46,12 @@ const MMHeader = () => {
           setLoading(true);
           setError(null);
           try {
-              const response = await axios.get("https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/movies");
+              const response = await apiService.movies.getAll();
               setMovies(response.data);
           }
           catch (err) {
-              setError(err.message);
+              const errorMessage = handleApiError(err, 'Failed to fetch movies');
+              setError(errorMessage);
           }
           finally{
               setLoading(false);
@@ -90,11 +92,12 @@ const MMHeader = () => {
       e.preventDefault();
       setError(null);
       try {
-          const response = await axios.post("https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/movies", formData);
+          const response = await apiService.movies.create(formData);
           setMovies((prevMovies) => [...prevMovies, response.data]);
           handleGoToList(); // Go to list view
          } catch (err) {
-          setError(err.message)
+          const errorMessage = handleApiError(err, 'Failed to create movie');
+          setError(errorMessage);
       }
 
   };

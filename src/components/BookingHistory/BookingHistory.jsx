@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import './BookingHistory.css';
 import { useNavigate } from 'react-router-dom';
+import { apiService } from '../../utils/axios';
+import { handleApiError } from '../../utils/errorHandler';
 
 function BookingHistoryP() {
     const [bookings, setBookings] = useState([]);
     const [userId, setUserId] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -19,30 +23,54 @@ function BookingHistoryP() {
       //Fetch booking data only if there is a userId
       if(userId){
           const fetchBookings = async () => {
-              try {
-                  const response = await fetch(`https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/bookings/user/${userId}`);
-                  if (!response.ok) {
-                      throw new Error(`HTTP error! Status: ${response.status}`);
-                  }
-                  const data = await response.json();
-                  setBookings(data);
+              setLoading(true);
+              setError(null);
+                             try {
+                   const response = await apiService.bookings.getByUserId(userId);
+                   setBookings(response.data);
               } catch (error) {
+                  const errorMessage = handleApiError(error);
+                  setError(errorMessage);
                   console.error('Failed to fetch bookings:', error);
-                  // Handle the error (e.g., display an error message to the user)
+              } finally {
+                  setLoading(false);
               }
           };
            fetchBookings();
       }
-
-
   }, [userId]);
-
 
   const handleBookingClick = (bookingId) => {
     navigate(`/Booking?bookingId=${bookingId}`);
   };
 
+    if (loading) {
+        return (
+            <div className="bkh-body">
+                <div className="bkh-container">
+                    <div className="bkh-booking-history">
+                        <h2 className="bkh-title">Movie Booking History</h2>
+                        <div className="bkh-title-line"></div>
+                        <p>Loading booking history...</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
+    if (error) {
+        return (
+            <div className="bkh-body">
+                <div className="bkh-container">
+                    <div className="bkh-booking-history">
+                        <h2 className="bkh-title">Movie Booking History</h2>
+                        <div className="bkh-title-line"></div>
+                        <p style={{ color: 'red' }}>Error: {error}</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="bkh-body">

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import './BookingConfirm.css';
+import { apiService } from '../../utils/axios';
+import { handleApiError } from '../../utils/errorHandler';
 
 function BookingConfirmation() {
     const location = useLocation();
@@ -14,49 +16,39 @@ function BookingConfirmation() {
     const [movieDetails, setMovieDetails] = useState(null);
     const [theatreDetails, setTheatreDetails] = useState(null);
     const [screenDetails, setScreenDetails] = useState(null)
-    const API_BASE_URL = 'https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api';
 
     useEffect(() => {
         const fetchBookingAndUserDetails = async () => {
             setLoading(true);
             try {
                 // Fetch booking details
-                const bookingResponse = await fetch(`${API_BASE_URL}/bookings/${bookingId}`);
-                if (!bookingResponse.ok) {
-                    throw new Error(`HTTP error! status: ${bookingResponse.status} fetching booking`);
-                }
-                const bookingData = await bookingResponse.json();
+                const bookingResponse = await apiService.bookings.getById(bookingId);
+                const bookingData = bookingResponse.data;
                 setBookingDetails(bookingData);
 
                 // Fetch user details
-                const userResponse = await fetch(`${API_BASE_URL}/auth/${bookingData.userId}`);
-                if (!userResponse.ok) {
-                    throw new Error(`HTTP error! status: ${userResponse.status} fetching user`);
-                }
-                const userData = await userResponse.json();
+                const userResponse = await apiService.auth.getUserById(bookingData.userId);
+                const userData = userResponse.data;
                 setUserDetails(userData);
-                  // Fetch showtime details using showtimeId from booking
-                  const showtimeResponse = await fetch(`${API_BASE_URL}/showtimes/${bookingData.showtimeId}`);
-                  if (!showtimeResponse.ok) {
-                       throw new Error(`HTTP error! status: ${showtimeResponse.status} fetching showtime`);
-                  }
-                  const showtimeData = await showtimeResponse.json();
-                  setMovieDetails(showtimeData.movieId);
-                  setTheatreDetails(showtimeData.screenId.theatreId)
-                  setScreenDetails(showtimeData.screenId);
+                
+                // Fetch showtime details using showtimeId from booking
+                const showtimeResponse = await apiService.showtimes.getById(bookingData.showtimeId);
+                const showtimeData = showtimeResponse.data;
+                setMovieDetails(showtimeData.movieId);
+                setTheatreDetails(showtimeData.screenId.theatreId)
+                setScreenDetails(showtimeData.screenId);
 
-                  // Fetch seat details (single request)
-                  const seatIds = bookingData.showtimeSeatIds.join(',')
-                  const seatResponse = await fetch(`${API_BASE_URL}/showtimes/seats/search?showtimeSeatIds=${seatIds}`);
-                  if (!seatResponse.ok) {
-                         throw new Error(`HTTP error! status: ${seatResponse.status} fetching seats`);
-                  }
-                  const seatData = await seatResponse.json();
-                  const seatNumbers = seatData.map(seat => seat.seatNumber);
-                  setSeatNumbers(seatNumbers);
+                // Fetch seat details (single request)
+                const seatIds = bookingData.showtimeSeatIds.join(',')
+                const seatResponse = await apiService.showtimes.searchSeats({ showtimeSeatIds: seatIds });
+                const seatData = seatResponse.data;
+                const seatNumbers = seatData.map(seat => seat.seatNumber);
+                setSeatNumbers(seatNumbers);
 
             } catch (error) {
-                setError(error.message);
+                const errorMessage = handleApiError(error);
+                setError(errorMessage);
+                console.error('Error fetching booking details:', error);
             } finally {
                 setLoading(false);
             }

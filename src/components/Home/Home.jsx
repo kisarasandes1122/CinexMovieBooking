@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Homemain from "../Home/Homemain";
-import axios from "axios";
+import { apiService } from "../../utils/axios";
+import { handleApiError } from "../../utils/errorHandler";
 
 const Home = () => {
     const [movies, setMovies] = useState([]);
@@ -8,34 +9,34 @@ const Home = () => {
     const [error, setError] = useState(null);
     const [activeSlide, setActiveSlide] = useState(0);
 
-
     useEffect(() => {
         const fetchFeaturedMovies = async () => {
             setLoading(true);
             setError(null);
-          try {
-            const response = await axios.get('https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/movies/now-showing');
-            
-            // Ensure response.data is an array before setting movies
-            if (response.data && Array.isArray(response.data) && response.data.length > 0) {
-               setMovies(response.data);
-            } else if (response.data && Array.isArray(response.data)) {
-                // Empty array case
-                setMovies([]);
-                setError('No movies found');
-            } else {
-                // Non-array response case
-                setMovies([]);
-                setError('Invalid response format from server');
+            try {
+                const response = await apiService.movies.getNowShowing();
+                
+                // Ensure response.data is an array before setting movies
+                if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+                    setMovies(response.data);
+                } else if (response.data && Array.isArray(response.data)) {
+                    // Empty array case
+                    setMovies([]);
+                    setError('No movies found');
+                } else {
+                    // Non-array response case
+                    setMovies([]);
+                    setError('Invalid response format from server');
+                }
+            } catch (err) {
+                const errorMessage = handleApiError(err, 'Failed to fetch featured movies');
+                setError(errorMessage);
+                setMovies([]); // Ensure movies remains an array even on error
+            } finally {
+                setLoading(false);
             }
-          } catch (err) {
-            setError(err.message);
-            setMovies([]); // Ensure movies remains an array even on error
-          } finally {
-             setLoading(false);
-          }
         };
-         fetchFeaturedMovies();
+        fetchFeaturedMovies();
     }, []);
 
   useEffect(() => {

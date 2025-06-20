@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { apiService } from '../../utils/axios';
+import { handleApiError } from '../../utils/errorHandler';
 
 const UserDetails = () => {
   const location = useLocation();
@@ -13,23 +15,18 @@ const UserDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-   const API_BASE_URL = 'https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api';
-
     useEffect(() => {
         const fetchUserDetails = async () => {
             if(!userId) return;
              setLoading(true);
             try{
-             const response = await fetch(`${API_BASE_URL}/auth/${userId}`)
-             if(!response.ok){
-              throw new Error(`HTTP error! status: ${response.status}`)
-            }
-
-             const data = await response.json();
+             const response = await apiService.auth.getUserById(userId);
+             const data = response.data;
               setUserDetails(data);
             }
             catch(error){
-              setError(error.message);
+              const errorMessage = handleApiError(error, 'Failed to fetch user details');
+              setError(errorMessage);
              }
             finally{
               setLoading(false)

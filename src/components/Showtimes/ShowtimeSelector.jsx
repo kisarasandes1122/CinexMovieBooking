@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import './ShowtimeSelector.css';
 import { format, addDays, isSameDay, startOfDay, parse } from 'date-fns';
 import { useParams } from 'react-router-dom';
+import { apiService } from '../../utils/axios';
+import { handleApiError } from '../../utils/errorHandler';
 
 function createSlug(title) {
     if(!title) {
@@ -24,20 +26,13 @@ const ShowtimeSelector = () => {
     const [movieTitle, setMovieTitle] = useState('');
     const [screens, setScreens] = useState({});
     const [theatres, setTheatres] = useState({});
-    const API_BASE_URL = 'https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api';
 
 
     useEffect(() => {
         const fetchMovieTitle = async () => {
             try {
-                const response = await fetch(`${API_BASE_URL}/movies`);
-                if (!response.ok) {
-                    const message = `Error fetching movie title: HTTP ${response.status} - ${response.statusText}`;
-                    setError(message);
-                    console.error(message);
-                    return;
-                }
-                const data = await response.json();
+                const response = await apiService.movies.getAll();
+                const data = response.data;
                 const movie = data.find((movie) => createSlug(movie.title) === id);
                 if (!movie) {
                     const message = `Movie with id ${id} not found`;
@@ -47,13 +42,13 @@ const ShowtimeSelector = () => {
                 }
                 setMovieTitle(movie.title);
             } catch (err) {
-                const message = `Error fetching movie title: ${err.message}`;
-                setError(message);
-                console.error(message);
+                const errorMessage = handleApiError(err, 'Failed to fetch movie title');
+                setError(errorMessage);
+                console.error(errorMessage);
             }
         };
         fetchMovieTitle();
-    }, [id, API_BASE_URL]);
+    }, [id]);
 
 
     useEffect(() => {
@@ -77,24 +72,11 @@ const ShowtimeSelector = () => {
         const fetchScreensAndTheatres = async () => {
             setLoading(true);
             try {
-                const screenResponse = await fetch(`${API_BASE_URL}/screens`);
-                if (!screenResponse.ok) {
-                    const message = `Error fetching screens: HTTP ${screenResponse.status} - ${screenResponse.statusText}`;
-                    setError(message);
-                    console.error(message);
-                    return;
-                }
-                const screenData = await screenResponse.json();
+                const screenResponse = await apiService.screens.getAll();
+                const screenData = screenResponse.data;
 
-                const theatreResponse = await fetch(`${API_BASE_URL}/theatres`);
-                if (!theatreResponse.ok) {
-                    const message = `Error fetching theatres: HTTP ${theatreResponse.status} - ${theatreResponse.statusText}`;
-                    setError(message);
-                    console.error(message);
-                    return;
-                }
-                const theatreData = await theatreResponse.json();
-
+                const theatreResponse = await apiService.theatres.getAll();
+                const theatreData = theatreResponse.data;
 
                  const screensMap = screenData.reduce((acc, screen) => {
                     acc[screen._id] = screen;
@@ -112,15 +94,15 @@ const ShowtimeSelector = () => {
 
 
             } catch (err) {
-                const message = `Error fetching screens and theatres: ${err.message}`;
-                setError(message);
-                console.error(message);
+                const errorMessage = handleApiError(err, 'Failed to fetch screens and theatres');
+                setError(errorMessage);
+                console.error(errorMessage);
             } finally {
                 setLoading(false);
             }
         };
         fetchScreensAndTheatres();
-    }, [API_BASE_URL]);
+    }, []);
 
 
     useEffect(() => {
@@ -145,16 +127,11 @@ const ShowtimeSelector = () => {
 
 
             try {
-                const response = await fetch(
-                    `${API_BASE_URL}/showtimes/search?title=${movieTitle}&date=${dateString}`
-                );
-                if (!response.ok) {
-                    const message = `Error fetching showtimes: HTTP ${response.status} - ${response.statusText}`;
-                    setError(message);
-                    console.error(message);
-                    return;
-                }
-                const data = await response.json();
+                const response = await apiService.showtimes.search({
+                    title: movieTitle,
+                    date: dateString
+                });
+                const data = response.data;
                  const mappedShowtimes = data.map((showtime) => {
                     const showtimeStartDate = startOfDay(new Date(showtime.start_date));
                      const formattedDate = format(showtimeStartDate, 'yyyy-MM-dd')
@@ -166,9 +143,9 @@ const ShowtimeSelector = () => {
                 });
                 setShowtimes(mappedShowtimes);
             } catch (err) {
-                const message = `Error fetching showtimes: ${err.message}`;
-                setError(message);
-                console.error(message);
+                const errorMessage = handleApiError(err, 'Failed to fetch showtimes');
+                setError(errorMessage);
+                console.error(errorMessage);
             } finally {
                 setLoading(false);
             }
@@ -176,7 +153,7 @@ const ShowtimeSelector = () => {
         if (movieTitle) {
             fetchShowtimes();
         }
-    }, [selectedDate, dates, movieTitle, API_BASE_URL]);
+    }, [selectedDate, dates, movieTitle]);
 
     const handleDateClick = (dateId) => {
         setSelectedDate(dateId);

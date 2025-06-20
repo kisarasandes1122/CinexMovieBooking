@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import './RegistrationForm.css';
+import { apiService } from '../../utils/axios';
+import { handleApiError } from '../../utils/errorHandler';
 
 const RegistrationForm = () => {
   const [formData, setFormData] = useState({
@@ -18,17 +20,11 @@ const RegistrationForm = () => {
       setRegistrationStatus("submitting") //Set submit status
       
     try {
-        const response = await fetch('https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/auth/register', {  // Replace '/api/auth/register' with your actual backend endpoint
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-        });
-
-        if (response.ok) {
+        const response = await apiService.auth.register(formData);
+        
+        if (response.data) {
           setRegistrationStatus('success');
-          const data = await response.json();
+          const data = response.data;
           console.log('Registration successful', data);
            // Optionally, clear the form here if needed
         setFormData({
@@ -40,15 +36,11 @@ const RegistrationForm = () => {
               receiveOffers: false,
               agreeToTerms: false
         });
-
-        } else {
-             setRegistrationStatus('error');
-          const errorData = await response.json();
-            console.error('Registration failed:', errorData.message || "Unknown error");
         }
     } catch (error) {
       setRegistrationStatus('error');
-        console.error('Error during registration:', error);
+      const errorMessage = handleApiError(error, 'Registration failed');
+      console.error('Error during registration:', errorMessage);
     }
   };
 

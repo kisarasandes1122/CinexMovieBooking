@@ -4,6 +4,8 @@ import '../MovieBooking/MovieBooking.css';
 import { useParams } from 'react-router-dom';
 import Showtime from '../Showtimes/Showtime.jsx';
 import MovieDetails from '../MovieDetails/MovieDetails.jsx';
+import { apiService } from '../../utils/axios';
+import { handleApiError } from '../../utils/errorHandler';
 
 function createSlug(title) {
     if(!title) {
@@ -27,11 +29,8 @@ const MovieBooking = () => {
             setLoading(true);
             setError(null);
             try {
-                const response = await fetch(`https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/movies`);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
+                const response = await apiService.movies.getAll();
+                const data = response.data;
                 const movie = data.find((movie) => createSlug(movie.title) === id);
                 if (!movie) {
                     setError('Movie not found');
@@ -40,7 +39,8 @@ const MovieBooking = () => {
                 setMovie(movie);
             }
             catch (error) {
-                setError(error.message);
+                const errorMessage = handleApiError(error, 'Failed to fetch movie details');
+                setError(errorMessage);
             }
             finally {
                 setLoading(false);

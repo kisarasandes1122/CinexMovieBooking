@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./TheatreManage.css";
-import axios from "axios";
+import { apiService } from "../../utils/axios";
+import { handleApiError } from "../../utils/errorHandler";
 
 function TheatreManage() {
   const [theatreData, setTheatreData] = useState([]);
@@ -15,11 +16,12 @@ function TheatreManage() {
           setLoading(true)
           setError(null);
           try{
-             const response = await axios.get('https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/theatres/with-screens');
+             const response = await apiService.theatres.getWithScreens();
              setTheatreData(response.data)
           }
           catch(err){
-               setError(err.message);
+               const errorMessage = handleApiError(err, 'Failed to fetch theatres');
+               setError(errorMessage);
           }
           finally{
               setLoading(false)
@@ -32,11 +34,12 @@ function TheatreManage() {
           setLoading(true)
           setError(null);
       try {
-        const response = await axios.post("https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/theatres", newTheatre);
+        const response = await apiService.theatres.create(newTheatre);
          setTheatreData((prevData) => [...prevData, response.data]);
          setPopup({ type: null, data: null });
       } catch (error) {
-          setError(error.message)
+          const errorMessage = handleApiError(error, 'Failed to add theatre');
+          setError(errorMessage);
       }
       finally{
           setLoading(false)
@@ -47,7 +50,7 @@ function TheatreManage() {
          setLoading(true)
          setError(null);
       try {
-        const response = await axios.post("https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/screens", newScreen);
+        const response = await apiService.screens.create(newScreen);
          // Update theatreData to reflect newly added screen.
         const updatedTheatreData = theatreData.map(theatre => {
             if(theatre._id === newScreen.theatreId){
@@ -58,7 +61,8 @@ function TheatreManage() {
         setTheatreData(updatedTheatreData)
          setPopup({ type: null, data: null });
       } catch (error) {
-          setError(error.message)
+          const errorMessage = handleApiError(error, 'Failed to add screen');
+          setError(errorMessage);
       }
       finally{
            setLoading(false);
@@ -70,11 +74,12 @@ function TheatreManage() {
         setLoading(true)
          setError(null);
         try{
-           await axios.delete(`https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/theatres/${theatreId}`)
+           await apiService.theatres.delete(theatreId);
           setTheatreData((prevData) => prevData.filter((t) => t._id !== theatreId))
         }
         catch(err){
-            setError(err.message);
+            const errorMessage = handleApiError(err, 'Failed to delete theatre');
+            setError(errorMessage);
         }
        finally{
           setLoading(false)

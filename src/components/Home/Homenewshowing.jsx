@@ -4,7 +4,8 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import './Homenowshowing.css';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { apiService } from '../../utils/axios';
+import { handleApiError } from '../../utils/errorHandler';
 import nextArrow from '../../assets/arrownext.png';
 import prevArrow from '../../assets/arrowprevios.png';
 
@@ -30,18 +31,19 @@ const Homenowshowing = () => {
       setLoading(true);
       setError(null);
       try {
-         const response = await axios.get('https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/movies/now-showing/'); // Replace with your backend URL
-         // Ensure response.data is an array before setting movies
-         if (Array.isArray(response.data)) {
-           setMovies(response.data);
-         } else {
-           setMovies([]);
-         }
+          const response = await apiService.movies.getNowShowing();
+          // Ensure response.data is an array before setting movies
+          if (Array.isArray(response.data)) {
+              setMovies(response.data);
+          } else {
+              setMovies([]);
+          }
       } catch (err) {
-          setError(err.message);
+          const errorMessage = handleApiError(err, 'Failed to fetch now showing movies');
+          setError(errorMessage);
           setMovies([]); // Set movies to empty array on error
       } finally {
-           setLoading(false);
+          setLoading(false);
       }
     };
 

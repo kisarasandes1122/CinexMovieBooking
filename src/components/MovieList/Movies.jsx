@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MovieListSearchBar from './MovieListSearchbar';
 import '../MovieList/Movies.css';
+import { apiService } from '../../utils/axios';
+import { handleApiError } from '../../utils/errorHandler';
 
 const Movies = () => {
   const [filter, setFilter] = useState('Now Showing');
@@ -13,39 +15,32 @@ const Movies = () => {
 
     const fetchMovies = async () => {
         try {
-        let url;
-        if (filter === "Now Showing") {
-           url = `https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/movies/now-showing`;
-        } else {
-           url = `https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/movies/coming-soon`;
-        }
+            const params = {};
+            if(searchTitle) {
+                params.title = searchTitle;
+            }
+            if(searchGenre) {
+                params.genre = searchGenre;
+            }
 
-        const queryParams = new URLSearchParams();
-        if(searchTitle) {
-            queryParams.append('title', searchTitle);
-        }
-        if(searchGenre) {
-             queryParams.append('genre', searchGenre);
-        }
-        
-        const fullUrl = `${url}?${queryParams.toString()}`;
-        
-        const response = await fetch(fullUrl);
+            let response;
+            if (filter === "Now Showing") {
+                response = await apiService.movies.getNowShowing(params);
+            } else {
+                response = await apiService.movies.getComingSoon(params);
+            }
 
-        if (!response.ok) {
-        throw new Error('Failed to fetch movies');
-        }
-
-        const data = await response.json();
-        // Ensure data is an array before setting movies
-        if (Array.isArray(data)) {
-          setMovies(data);
-        } else {
-          setMovies([]);
-        }
+            const data = response.data;
+            // Ensure data is an array before setting movies
+            if (Array.isArray(data)) {
+                setMovies(data);
+            } else {
+                setMovies([]);
+            }
         }
         catch (error) {
-            console.error('Error fetching movies', error);
+            const errorMessage = handleApiError(error, 'Failed to fetch movies');
+            console.error('Error fetching movies', errorMessage);
             setMovies([]); // Set movies to empty array on error
         }
     }

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./SeatSelection.css";
 import { format } from 'date-fns';
+import { apiService } from '../../utils/axios';
+import { handleApiError } from '../../utils/errorHandler';
 
 const SeatSelection = () => {
     const [selectedSeats, setSelectedSeats] = useState([]);
@@ -19,7 +21,6 @@ const SeatSelection = () => {
     const showtimeId = queryParams.get("showtimeId");
     const movieTitle = queryParams.get("movieTitle");
 
-    const API_BASE_URL = 'https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api';
     const userId = localStorage.getItem('userId');
 
 
@@ -29,11 +30,8 @@ const SeatSelection = () => {
                 setLoading(true);
 
                 // Fetch Showtime data
-                const showtimeResponse = await fetch(`${API_BASE_URL}/showtimes/${showtimeId}`);
-                if (!showtimeResponse.ok) {
-                    throw new Error(`HTTP error! status: ${showtimeResponse.status} fetching showtime`);
-                }
-                const showtimeData = await showtimeResponse.json();
+                const showtimeResponse = await apiService.showtimes.getById(showtimeId);
+                const showtimeData = showtimeResponse.data;
                 setShowtime(showtimeData);
 
                 // Log showtimeData.screenId here
@@ -43,26 +41,16 @@ const SeatSelection = () => {
 
                 console.log("screenId", screenId);
 
-                 const screenResponse = await fetch(`${API_BASE_URL}/screens/${screenId}`);
-                if (!screenResponse.ok) {
-                    throw new Error(`HTTP error! status: ${screenResponse.status} fetching screen`);
-                }
-                const screenData = await screenResponse.json();
+                const screenResponse = await apiService.screens.getById(screenId);
+                const screenData = screenResponse.data;
                 setScreenFormat(screenData.format || "Standard");
 
-                const theatreResponse = await fetch(`${API_BASE_URL}/theatres/${screenData.theatreId}`);
-                if (!theatreResponse.ok) {
-                    throw new Error(`HTTP error! status: ${theatreResponse.status} fetching theatre`);
-                }
-                const theatreData = await theatreResponse.json();
+                const theatreResponse = await apiService.theatres.getById(screenData.theatreId);
+                const theatreData = theatreResponse.data;
                 setTheatreLocation(theatreData.location);
 
-
-                const response = await fetch(`${API_BASE_URL}/showtimes/${showtimeId}/seats`);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status} fetching seats`);
-                }
-                const data = await response.json();
+                const seatsResponse = await apiService.showtimes.getSeats(showtimeId);
+                const data = seatsResponse.data;
 
                 // Group seats by row
                 const groupedSeats = data.reduce((acc, seat) => {
@@ -80,7 +68,8 @@ const SeatSelection = () => {
 
                 setSeats(groupedSeats);
             } catch (err) {
-                setError(err.message);
+                const errorMessage = handleApiError(err, 'Failed to fetch seat data');
+                setError(errorMessage);
             } finally {
                 setLoading(false);
             }

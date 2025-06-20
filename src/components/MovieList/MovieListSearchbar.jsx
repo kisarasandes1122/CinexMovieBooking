@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../MovieList/MovieListSearchbar.css';
+import { apiService } from '../../utils/axios';
+import { handleApiError } from '../../utils/errorHandler';
 
 const MovieListSearchBar = ({ onSearch }) => {
   const [searchTitle, setSearchTitle] = useState('');
@@ -10,11 +12,8 @@ const MovieListSearchBar = ({ onSearch }) => {
    useEffect(() => {
      const fetchGenres = async () => {
       try {
-          const response = await fetch('https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/movies') // Fetch all movies to get distinct genres
-          if (!response.ok) {
-            throw new Error('Failed to fetch movies for genres');
-          }
-          const data = await response.json();
+          const response = await apiService.movies.getAll(); // Fetch all movies to get distinct genres
+          const data = response.data;
           const uniqueGenres = [...new Set(data.reduce((acc, movie) => {
                if(movie.genres) {
                   return acc.concat(movie.genres.split(',').map(g => g.trim()))
@@ -23,7 +22,8 @@ const MovieListSearchBar = ({ onSearch }) => {
           }, []))];
         setGenres(uniqueGenres)
       } catch (error) {
-          console.error('Error fetching movies for genres', error);
+          const errorMessage = handleApiError(error, 'Failed to fetch genres');
+          console.error('Error fetching movies for genres', errorMessage);
       }
       }
       fetchGenres()

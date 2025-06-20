@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import emailjs from '@emailjs/browser';
+import { apiService } from '../../utils/axios';
+import { handleApiError } from '../../utils/errorHandler';
 
 const PaymentMethod = ({ discountedPrice, movieTitle, selectedDate, selectedTime, selectedSeats, userId, showtimeId, showtimeSeatIds, setPaymentSuccess }) => {
     const [scriptLoaded, setScriptLoaded] = useState(false);
@@ -9,33 +11,26 @@ const PaymentMethod = ({ discountedPrice, movieTitle, selectedDate, selectedTime
     const [userDetails, setUserDetails] = useState(null);
     const [showtimeDetails, setShowtimeDetails] = useState(null);
 
-
-     const API_BASE_URL = 'https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api';
-
     useEffect(() => {
        const fetchUserDetails = async () => {
             try{
-              const response = await fetch(`${API_BASE_URL}/auth/${userId}`)
-              if(!response.ok){
-               throw new Error(`HTTP error! status: ${response.status}`)
-             }
-              const data = await response.json();
+              const response = await apiService.auth.getUserById(userId);
+              const data = response.data;
               setUserDetails(data);
              }
              catch(error){
-                console.error("Failed to fetch user details:", error);
+                const errorMessage = handleApiError(error, 'Failed to fetch user details');
+                console.error("Failed to fetch user details:", errorMessage);
              }
          }
           const fetchShowtimeDetails = async () => {
             try {
-              const response = await fetch(`${API_BASE_URL}/showtimes/${showtimeId}`);
-              if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-              }
-              const data = await response.json();
+              const response = await apiService.showtimes.getById(showtimeId);
+              const data = response.data;
                 setShowtimeDetails(data);
             } catch (error) {
-                console.error("Failed to fetch showtime details:", error);
+                const errorMessage = handleApiError(error, 'Failed to fetch showtime details');
+                console.error("Failed to fetch showtime details:", errorMessage);
             }
         };
 
@@ -88,20 +83,8 @@ const PaymentMethod = ({ discountedPrice, movieTitle, selectedDate, selectedTime
                                 showtimeSeatIds: showtimeSeatIds
                             };
 
-                            const response = await fetch('https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/bookings/', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify(bookingData)
-                            });
-
-                             if (!response.ok) {
-                                const errorData = await response.json();
-                                throw new Error(`Booking creation failed: ${errorData.message || 'Unknown error'}`);
-                            }
-
-                            const newBooking = await response.json();
+                            const response = await apiService.bookings.create(bookingData);
+                            const newBooking = response.data;
                             setPaymentSuccess(true);
                             console.log("Booking successful!", newBooking);
 

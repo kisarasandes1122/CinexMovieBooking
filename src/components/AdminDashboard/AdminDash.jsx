@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './AdminDash.css';
+import { apiService } from '../../utils/axios';
+import { handleApiError } from '../../utils/errorHandler';
 
 const AdminDash = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -25,34 +27,21 @@ const AdminDash = () => {
             setError(null);
             try {
                 // Fetch Total Movies
-                const moviesResponse = await fetch('https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/movies/count');
-                if (!moviesResponse.ok) {
-                    throw new Error(`HTTP error! status: ${moviesResponse.status}`);
-                }
-                const moviesData = await moviesResponse.json();
-                setTotalMovies(moviesData.count);
-
+                const moviesResponse = await apiService.movies.getCount();
+                setTotalMovies(moviesResponse.data.count);
 
                 // Fetch Total Users
-                const usersResponse = await fetch('https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/auth/count');
-                if (!usersResponse.ok) {
-                    throw new Error(`HTTP error! status: ${usersResponse.status}`);
-                }
-                const usersData = await usersResponse.json();
-                setTotalUsers(usersData.count);
-
+                const usersResponse = await apiService.auth.getUserCount();
+                setTotalUsers(usersResponse.data.count);
 
                 // Fetch Active Showtimes
-                const showtimesResponse = await fetch('https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/showtimes/count/today');
-                if (!showtimesResponse.ok) {
-                    throw new Error(`HTTP error! status: ${showtimesResponse.status}`);
-                }
-                const showtimesData = await showtimesResponse.json();
-                setActiveShowtimes(showtimesData.count);
-
+                const showtimesResponse = await apiService.showtimes.getTodayCount();
+                setActiveShowtimes(showtimesResponse.data.count);
 
             } catch (err) {
-                setError(err.message)
+                const errorMessage = handleApiError(err);
+                setError(errorMessage);
+                console.error('Error fetching dashboard data:', err);
             } finally {
                 setIsLoading(false);
             }

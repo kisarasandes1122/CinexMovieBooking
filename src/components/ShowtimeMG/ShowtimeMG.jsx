@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./ShowtimeMG.css";
+import { apiService } from '../../utils/axios';
+import { handleApiError } from '../../utils/errorHandler';
 
 function ShowtimeMG() {
     const [showtimes, setShowtimes] = useState([]);
@@ -29,34 +31,20 @@ function ShowtimeMG() {
               setError(null);
            try{
                const [showtimeResponse, movieResponse, screenResponse, theatreResponse] = await Promise.all([
-                      fetch('https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/showtimes/all/details'),
-                      fetch('https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/movies'),
-                      fetch('https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/screens'),
-                      fetch('https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/theatres/with-screens')
+                      apiService.showtimes.getAllWithDetails(),
+                      apiService.movies.getAll(),
+                      apiService.screens.getAll(),
+                      apiService.theatres.getWithScreens()
                    ]);
-                if(!showtimeResponse.ok){
-                     throw new Error(`HTTP error! status: ${showtimeResponse.status}`);
-                }
-                if(!movieResponse.ok){
-                     throw new Error(`HTTP error! status: ${movieResponse.status}`);
-                }
-               if(!screenResponse.ok){
-                     throw new Error(`HTTP error! status: ${screenResponse.status}`);
-                 }
-               if(!theatreResponse.ok){
-                    throw new Error(`HTTP error! status: ${theatreResponse.status}`);
-               }
-                 const showtimeData = await showtimeResponse.json();
-                 const movieData = await movieResponse.json();
-                 const screenData = await screenResponse.json();
-                 const theatreData = await theatreResponse.json();
-                 setShowtimes(showtimeData);
-                 setMovies(movieData);
-                 setScreens(screenData);
-                 setTheatres(theatreData);
+                 
+                 setShowtimes(showtimeResponse.data);
+                 setMovies(movieResponse.data);
+                 setScreens(screenResponse.data);
+                 setTheatres(theatreResponse.data);
            }
            catch (err){
-               setError(err.message)
+               const errorMessage = handleApiError(err, 'Failed to fetch data');
+               setError(errorMessage);
             } finally {
                 setLoading(false);
             }
@@ -154,31 +142,18 @@ function ShowtimeMG() {
         };
 
         try {
-            const response = await fetch('https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/showtimes', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(newShowtime),
-            });
-
-            if (!response.ok) {
-                const message = `Error Occured: ${response.status}`
-                throw new Error(message);
-            }
-            const data = await response.json();
+            const response = await apiService.showtimes.create(newShowtime);
+            const data = response.data;
+            
             //Refresh the data from backend
-            const response_details = await fetch('https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/showtimes/all/details');
-            if (!response_details.ok) {
-                throw new Error(`HTTP error! status: ${response_details.status}`);
-            }
-            const data_details = await response_details.json();
-            setShowtimes(data_details);
+            const response_details = await apiService.showtimes.getAllWithDetails();
+            setShowtimes(response_details.data);
             alert("Showtime Added Successfully")
 
         }
         catch (error) {
-            alert(error.message);
+            const errorMessage = handleApiError(error, 'Failed to create showtime');
+            alert(errorMessage);
         }
 
         handleCloseForm();
@@ -186,25 +161,17 @@ function ShowtimeMG() {
 
     const handleDelete = async (id) => {
       try {
-           const response = await fetch(`https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/showtimes/delete/${id}`, {
-                method: 'DELETE'
-            });
-            if (!response.ok) {
-                const message = `Error Occured: ${response.status}`
-                throw new Error(message);
-            }
+           await apiService.showtimes.delete(id);
+           
           //Refresh the data from backend
-            const response_details = await fetch('https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/showtimes/all/details');
-            if (!response_details.ok) {
-                throw new Error(`HTTP error! status: ${response_details.status}`);
-            }
-            const data_details = await response_details.json();
-            setShowtimes(data_details);
+            const response_details = await apiService.showtimes.getAllWithDetails();
+            setShowtimes(response_details.data);
           alert("Showtime Deleted Successfully")
 
         }
       catch (error) {
-            alert(error.message);
+            const errorMessage = handleApiError(error, 'Failed to delete showtime');
+            alert(errorMessage);
       }
     };
 

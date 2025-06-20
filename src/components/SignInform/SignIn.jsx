@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
 import './SignIn.css';
 import * as jwt_decode from 'jwt-decode';
+import { apiService } from '../../utils/axios';
+import { handleApiError } from '../../utils/errorHandler';
 
 const SignIn = ({ onLogin }) => {
     const [email, setEmail] = useState("");
@@ -15,25 +17,18 @@ const SignIn = ({ onLogin }) => {
         setSignInStatus("submitting");
 
         try {
-            const response = await fetch('https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, password }),
-            });
-
-            if (response.ok) {
-                const data = await response.json();
+            const response = await apiService.auth.login({ email, password });
+            
+            if (response.data) {
+                const data = response.data;
                 setSignInStatus("success");
                 onLogin(data.token);
 
-                 try {
-                       const decodedToken = jwt_decode.jwtDecode(data.token);
-                        localStorage.setItem('userId', decodedToken.userId);
-                 }
-                catch(error){
-                    console.error('Error decoding token', error)
+                try {
+                    const decodedToken = jwt_decode.jwtDecode(data.token);
+                    localStorage.setItem('userId', decodedToken.userId);
+                } catch(error) {
+                    console.error('Error decoding token', error);
                 }
 
                 setEmail("");
@@ -42,14 +37,11 @@ const SignIn = ({ onLogin }) => {
                 // Navigate to the protected route or home
                 const from = location.state?.from?.pathname || '/';
                 navigate(from, { replace: true });
-            } else {
-                setSignInStatus('error');
-                const errorData = await response.json();
-                console.error('Sign In failed:', errorData.message || "Unknown error");
             }
         } catch (error) {
             setSignInStatus('error');
-            console.error('Error during sign in:', error);
+            const errorMessage = handleApiError(error, 'Sign in failed');
+            console.error('Sign In failed:', errorMessage);
         }
     };
 

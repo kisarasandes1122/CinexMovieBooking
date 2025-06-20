@@ -4,7 +4,8 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import './Homecomingsoon.css';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { apiService } from '../../utils/axios';
+import { handleApiError } from '../../utils/errorHandler';
 import nextArrow from '../../assets/arrownext.png';
 import prevArrow from '../../assets/arrowprevios.png';
 
@@ -18,20 +19,21 @@ const Homecomingsoon = () => {
     const fetchComingSoonMovies = async () => {
         setLoading(true);
         setError(null);
-      try {
-        const response = await axios.get('https://0735-2402-4000-2300-2930-744c-1b57-deb8-3da0.ngrok-free.app/api/movies/coming-soon/'); // Replace with your backend URL
-        // Ensure response.data is an array before setting movies
-        if (Array.isArray(response.data)) {
-          setMovies(response.data);
-        } else {
-          setMovies([]);
+        try {
+            const response = await apiService.movies.getComingSoon();
+            // Ensure response.data is an array before setting movies
+            if (Array.isArray(response.data)) {
+                setMovies(response.data);
+            } else {
+                setMovies([]);
+            }
+        } catch (err) {
+            const errorMessage = handleApiError(err, 'Failed to fetch coming soon movies');
+            setError(errorMessage);
+            setMovies([]); // Set movies to empty array on error
+        } finally {
+            setLoading(false);
         }
-      } catch (err) {
-          setError(err.message);
-          setMovies([]); // Set movies to empty array on error
-      } finally {
-         setLoading(false);
-      }
     };
     fetchComingSoonMovies();
   }, []);
