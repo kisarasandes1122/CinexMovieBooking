@@ -6,6 +6,9 @@ function BookingSuccess() {
   const location = useLocation();
   const navigate = useNavigate();
   
+  // Debug: Log the location state to see what data is being passed
+  console.log('BookingSuccess - location.state:', location.state);
+  
   // Get data from navigation state (from new payment flow) or use defaults
   const {
     booking,
@@ -17,6 +20,11 @@ function BookingSuccess() {
     userDetails,
     showtimeDetails
   } = location.state || {};
+
+  // Debug: Log individual values
+  console.log('BookingSuccess - booking:', booking);
+  console.log('BookingSuccess - movieTitle:', movieTitle);
+  console.log('BookingSuccess - userDetails:', userDetails);
 
   // Default fallback data for backward compatibility
   const displayData = {
@@ -33,6 +41,9 @@ function BookingSuccess() {
     customerMobile: userDetails?.mobile || '0789200730',
     customerEmail: userDetails?.email || 'kisarasandes22@gmail.com'
   };
+  
+  // Debug: Log display data
+  console.log('BookingSuccess - displayData:', displayData);
 
   const handleGoHome = () => {
     navigate('/');

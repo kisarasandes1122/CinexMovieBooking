@@ -49,6 +49,12 @@ const PaymentPage = () => {
 
     const handlePaymentSuccess = async (paymentDetails) => {
         try {
+            console.log('PaymentPage - Starting booking creation...');
+            console.log('PaymentPage - userDetails:', userDetails);
+            console.log('PaymentPage - showtimeDetails:', showtimeDetails);
+            console.log('PaymentPage - selectedSeats:', selectedSeats);
+            console.log('PaymentPage - paymentDetails:', paymentDetails);
+            
             // Create booking
             const bookingData = {
                 userId: userId,
@@ -56,24 +62,33 @@ const PaymentPage = () => {
                 showtimeSeatIds: showtimeSeatIds
             };
 
+            console.log('PaymentPage - bookingData to send:', bookingData);
+            
             const response = await apiService.bookings.create(bookingData);
             const newBooking = response.data;
+            
+            console.log('PaymentPage - newBooking created:', newBooking);
 
             // Send confirmation email
             await sendConfirmationEmail(newBooking, userDetails, showtimeDetails, paymentDetails);
 
+            // Prepare navigation state
+            const navigationState = {
+                booking: newBooking,
+                movieTitle,
+                selectedDate,
+                selectedTime,
+                selectedSeats,
+                totalAmount: discountedPrice,
+                userDetails,
+                showtimeDetails
+            };
+            
+            console.log('PaymentPage - Navigating to BookingSuccess with state:', navigationState);
+
             // Navigate to success page with booking details
             navigate('/BookingSuccess', {
-                state: {
-                    booking: newBooking,
-                    movieTitle,
-                    selectedDate,
-                    selectedTime,
-                    selectedSeats,
-                    totalAmount: discountedPrice,
-                    userDetails,
-                    showtimeDetails
-                }
+                state: navigationState
             });
         } catch (error) {
             console.error('Booking creation failed:', error);

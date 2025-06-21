@@ -22,6 +22,7 @@ import Payments from './components/PaymentSection/PaymentPage';
 import MMHeader from './components/MMHeader/MMHeader';
 import * as jwt_decode from 'jwt-decode';
 import BookingConfirmation from './components/BookingConfirm/BookingConfirm';
+import BookingSuccessPage from './Pages/BookingSuccess';
 import ShowtimeMG from './Pages/showtimeMG';
 import ChangePasswordForm from './components/ChangePassword/ChangePasswordForm';
 import UpcomingBookingDetail from './components/UpcomingBookingDetail/UpcomingBookingDetail';
@@ -156,6 +157,7 @@ const AppContent = () => {
         <Route path="/Booking" element={<UpcomingBookingDetail />} />
         <Route path="/OffersPromotions" element={<OffersPromotions />} />
         <Route path="/Bookinghistory" element={<Bookinghistory />} />
+        <Route path="/BookingSuccess" element={<BookingSuccessPage />} />
       </Routes>
       <Footer />
     </div>

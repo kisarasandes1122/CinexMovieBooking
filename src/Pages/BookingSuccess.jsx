@@ -1,12 +1,12 @@
 import React from 'react'
-import BookingSucces from '../components/BookingSuccess/BookingSuccess';
+import BookingSuccess from '../components/BookingSuccess/BookingSuccess';
 
-const BookingSucces = () => {
+const BookingSuccessPage = () => {
   return (
     <div>
-      <BookingSucces/>
+      <BookingSuccess/>
     </div>
   )
 }
 
-export default BookingSuccess;
+export default BookingSuccessPage;
