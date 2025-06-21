@@ -5,7 +5,6 @@ import { apiService } from "../../utils/axios";
 import { handleApiError } from "../../utils/errorHandler";
 
 const MMHeader = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedGenres, setSelectedGenres] = useState([]);
   const [formData, setFormData] = useState({
       title: "",
@@ -25,7 +24,8 @@ const MMHeader = () => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-
+  const [searchTerm, setSearchTerm] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const genreOptions = [
       { value: "action", label: "Action" },
@@ -40,6 +40,55 @@ const MMHeader = () => {
       { value: "thriller", label: "Thriller" },
   ];
 
+  const customSelectStyles = {
+    control: (provided) => ({
+      ...provided,
+      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+      borderColor: 'rgba(115, 16, 16, 0.3)',
+      color: 'white',
+      minHeight: '45px',
+      '&:hover': {
+        borderColor: '#731010',
+      },
+    }),
+    menu: (provided) => ({
+      ...provided,
+      backgroundColor: '#1F1F1F',
+      border: '1px solid rgba(115, 16, 16, 0.3)',
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isSelected ? '#731010' : state.isFocused ? 'rgba(115, 16, 16, 0.2)' : 'transparent',
+      color: 'white',
+      '&:hover': {
+        backgroundColor: 'rgba(115, 16, 16, 0.3)',
+      },
+    }),
+    multiValue: (provided) => ({
+      ...provided,
+      backgroundColor: 'rgba(115, 16, 16, 0.8)',
+    }),
+    multiValueLabel: (provided) => ({
+      ...provided,
+      color: 'white',
+    }),
+    multiValueRemove: (provided) => ({
+      ...provided,
+      color: 'white',
+      '&:hover': {
+        backgroundColor: '#8B1A1A',
+        color: 'white',
+      },
+    }),
+    placeholder: (provided) => ({
+      ...provided,
+      color: 'rgba(255, 255, 255, 0.6)',
+    }),
+    singleValue: (provided) => ({
+      ...provided,
+      color: 'white',
+    }),
+  };
 
   useEffect(() => {
       const fetchMovies = async () => {
@@ -60,7 +109,6 @@ const MMHeader = () => {
       fetchMovies();
   }, []);
 
-
   const handleGenreChange = (selectedOptions) => {
       setSelectedGenres(selectedOptions || []);
       setFormData({
@@ -74,226 +122,352 @@ const MMHeader = () => {
       setFormData({ ...formData, [name]: value });
   };
 
-
- const handleAddMovie = () => {
+  const handleAddMovie = () => {
       setShowForm(true);
+      setError(null);
   };
 
   const handleCloseModal = () => {
       setShowForm(false);
-      setError(null)
+      setError(null);
+      setFormData({
+          title: "",
+          description: "",
+          cast: "",
+          director: "",
+          releaseDate: "",
+          duration: "",
+          rating: "",
+          genres: "",
+          imdbRating: "",
+          trailerURL: "",
+          moviePoster: "",
+          moviePosterHomepage: "",
+      });
+      setSelectedGenres([]);
   };
 
- const handleGoToList = () => {
+  const handleGoToList = () => {
      setShowForm(false);
- }
+  }
 
   const handleSubmit = async (e) => {
       e.preventDefault();
       setError(null);
+      setSubmitting(true);
       try {
           const response = await apiService.movies.create(formData);
           setMovies((prevMovies) => [...prevMovies, response.data]);
-          handleGoToList(); // Go to list view
-         } catch (err) {
+          handleCloseModal();
+      } catch (err) {
           const errorMessage = handleApiError(err, 'Failed to create movie');
           setError(errorMessage);
+      } finally {
+          setSubmitting(false);
       }
-
   };
 
+  const filteredMovies = movies.filter(movie => 
+    movie.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    movie.director.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    movie.cast.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   if(loading){
-      return <p>Loading Movies....</p>
+      return (
+        <div className="mm-loading-container">
+          <div className="mm-loading-spinner"></div>
+          <p>Loading Movies...</p>
+        </div>
+      );
   }
 
-  if(error){
-      return <p>Error: {error}</p>
+  if(error && !showForm){
+      return (
+        <div className="mm-error-container">
+          <div className="mm-error-icon">⚠️</div>
+          <h2>Error Loading Movies</h2>
+          <p>{error}</p>
+          <button onClick={() => window.location.reload()} className="mm-retry-btn">
+            Retry
+          </button>
+        </div>
+      );
   }
-
 
   return (
-      <div className="movie-management-container">
-          <div className="movie-management-header">
-              <h2>Movie Management</h2>
-              <button className="add-movie-btn" onClick={handleAddMovie}>
+      <div className="mm-container">
+          <div className="mm-header">
+              <div className="mm-header-content">
+                  <h1>Movie Management</h1>
+                  <p>Manage your cinema's movie collection</p>
+              </div>
+              <button className="mm-add-btn" onClick={handleAddMovie}>
+                  <span className="mm-btn-icon">🎬</span>
                   Add Movie
               </button>
           </div>
-          <div className="search-bar-container">
-              <input
-                  type="text"
-                  placeholder="Search Movies"
-                  className="search-bar"
-              />
-          </div>
+
+          {!showForm && (
+              <div className="mm-search-container">
+                  <div className="mm-search-wrapper">
+                      <span className="mm-search-icon">🔍</span>
+                      <input
+                          type="text"
+                          placeholder="Search movies by title, director, or cast..."
+                          className="mm-search-input"
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                      />
+                  </div>
+              </div>
+          )}
 
            {!showForm ? (
-                 <div className="movie-list-container">
-                       <h2>Movie List</h2>
-                       {movies.length === 0 ? (
-                           <p>No Movies Added Yet!</p>
+                 <div className="mm-movies-section">
+                       <div className="mm-movies-header">
+                           <h2>Movie Collection ({filteredMovies.length})</h2>
+                       </div>
+                       {filteredMovies.length === 0 ? (
+                           <div className="mm-empty-state">
+                               <div className="mm-empty-icon">🎬</div>
+                               <h3>No Movies Found</h3>
+                               <p>{searchTerm ? 'No movies match your search criteria' : 'Start by adding your first movie'}</p>
+                           </div>
                        ) : (
-                           <ul className="movie-list">
-                               {movies.map((movie) => (
-                                   <li key={movie._id} className="movie-item">
-                                       <h3>{movie.title}</h3>
-                                       <p><strong>Description:</strong> {movie.description}</p>
-                                       <p><strong>Cast:</strong> {movie.cast}</p>
-                                       <p><strong>Director:</strong> {movie.director}</p>
-                                       <p><strong>Release Date:</strong> {movie.releaseDate}</p>
-                                       <p><strong>Duration:</strong> {movie.duration}</p>
-                                       <p><strong>Rating:</strong> {movie.rating}</p>
-                                       <p><strong>Genres:</strong> {movie.genres}</p>
-                                       <p><strong>IMDB Rating:</strong> {movie.imdbRating}</p>
-                                       <p><strong>Trailer URL:</strong> <a href={movie.trailerURL} target="_blank" rel="noopener noreferrer">Watch Trailer</a></p>
-                                       <div className="poster-container">
-                                           <img src={movie.moviePoster} alt={movie.title} className="movie-poster" />
-                                           <img src={movie.moviePosterHomepage} alt={movie.title} className="movie-poster" />
+                           <div className="mm-movies-grid">
+                               {filteredMovies.map((movie) => (
+                                   <div key={movie._id} className="mm-movie-card">
+                                       <div className="mm-movie-poster-container">
+                                           <img 
+                                               src={movie.moviePoster} 
+                                               alt={movie.title} 
+                                               className="mm-movie-poster"
+                                               onError={(e) => {
+                                                   e.target.src = '/placeholder-movie.jpg';
+                                               }}
+                                           />
+                                           <div className="mm-movie-overlay">
+                                               <div className="mm-movie-rating">
+                                                   ⭐ {movie.imdbRating}/5
+                                               </div>
+                                           </div>
                                        </div>
-                                   </li>
+                                       <div className="mm-movie-info">
+                                           <h3 className="mm-movie-title">{movie.title}</h3>
+                                           <p className="mm-movie-director">Dir: {movie.director}</p>
+                                           <p className="mm-movie-duration">{movie.duration} • {movie.rating}</p>
+                                           <p className="mm-movie-genres">{movie.genres}</p>
+                                           <p className="mm-movie-description">{movie.description}</p>
+                                           <div className="mm-movie-actions">
+                                               <a 
+                                                   href={movie.trailerURL} 
+                                                   target="_blank" 
+                                                   rel="noopener noreferrer"
+                                                   className="mm-trailer-btn"
+                                               >
+                                                   ▶️ Trailer
+                                               </a>
+                                           </div>
+                                       </div>
+                                   </div>
                                ))}
-                           </ul>
+                           </div>
                        )}
                    </div>
            ) : (
-              <div className="modal">
-                  <div className="modal-content">
-                      <h3>Add New Movie</h3>
-                      {error && <p style={{ color: "red" }}>Error: {error}</p>}
-                      <form onSubmit={handleSubmit}>
-                          <div>
-                              <label>Title</label>
+              <div className="mm-modal-overlay">
+                  <div className="mm-modal-content">
+                      <div className="mm-modal-header">
+                          <h2>Add New Movie</h2>
+                          <button className="mm-modal-close" onClick={handleCloseModal}>×</button>
+                      </div>
+                      
+                      {error && (
+                          <div className="mm-error-message">
+                              <span className="mm-error-icon">⚠️</span>
+                              {error}
+                          </div>
+                      )}
+                      
+                      <form onSubmit={handleSubmit} className="mm-form">
+                          <div className="mm-form-group">
+                              <label className="mm-label">Movie Title *</label>
                               <input
                                   type="text"
                                   placeholder="Enter movie title"
                                   name="title"
                                   value={formData.title}
                                   onChange={handleInputChange}
+                                  className="mm-input"
                                   required
                               />
                           </div>
-                          <div>
-                              <label>Description</label>
+
+                          <div className="mm-form-group">
+                              <label className="mm-label">Description</label>
                               <textarea
                                   placeholder="Enter movie description"
                                   name="description"
                                   value={formData.description}
                                   onChange={handleInputChange}
-                              ></textarea>
-                          </div>
-                          <div>
-                              <label>Cast (Comma - Separated)</label>
-                              <input
-                                  type="text"
-                                  placeholder="Enter cast"
-                                  name="cast"
-                                  value={formData.cast}
-                                  onChange={handleInputChange}
+                                  className="mm-textarea"
+                                  rows="4"
                               />
                           </div>
 
-                          <div className="form-2lane">
-                              <div>
-                                  <label>Director</label>
+                          <div className="mm-form-group">
+                              <label className="mm-label">Cast (Comma-separated)</label>
+                              <input
+                                  type="text"
+                                  placeholder="Enter cast members"
+                                  name="cast"
+                                  value={formData.cast}
+                                  onChange={handleInputChange}
+                                  className="mm-input"
+                              />
+                          </div>
+
+                          <div className="mm-form-row">
+                              <div className="mm-form-group">
+                                  <label className="mm-label">Director</label>
                                   <input
                                       type="text"
-                                      placeholder="Enter director"
+                                      placeholder="Enter director name"
                                       name="director"
                                       value={formData.director}
                                       onChange={handleInputChange}
+                                      className="mm-input"
                                   />
                               </div>
-                              <div>
-                                  <label>Release Date</label>
+                              <div className="mm-form-group">
+                                  <label className="mm-label">Release Date</label>
                                   <input
                                       type="date"
                                       name="releaseDate"
                                       value={formData.releaseDate}
                                       onChange={handleInputChange}
+                                      className="mm-input"
                                   />
                               </div>
-                              <div>
-                                  <label>Duration</label>
+                          </div>
+
+                          <div className="mm-form-row">
+                              <div className="mm-form-group">
+                                  <label className="mm-label">Duration</label>
                                   <input
                                       type="text"
-                                      placeholder="Enter duration"
+                                      placeholder="e.g., 2h 30m"
                                       name="duration"
                                       value={formData.duration}
                                       onChange={handleInputChange}
+                                      className="mm-input"
                                   />
                               </div>
-                              <div>
-                                  <label>Rating</label>
+                              <div className="mm-form-group">
+                                  <label className="mm-label">Rating</label>
                                   <input
                                       type="text"
-                                      placeholder="Enter rating"
+                                      placeholder="e.g., PG-13"
                                       name="rating"
                                       value={formData.rating}
                                       onChange={handleInputChange}
+                                      className="mm-input"
                                   />
                               </div>
-                              <div>
-                                  <label>Genres</label>
+                          </div>
+
+                          <div className="mm-form-row">
+                              <div className="mm-form-group">
+                                  <label className="mm-label">Genres</label>
                                   <Select
                                       isMulti
                                       options={genreOptions}
                                       value={selectedGenres}
                                       onChange={handleGenreChange}
                                       placeholder="Select genres"
+                                      styles={customSelectStyles}
+                                      className="mm-select"
                                   />
                               </div>
-                              <div>
-                                  <label>IMDB Ratings (Out of 5)</label>
+                              <div className="mm-form-group">
+                                  <label className="mm-label">IMDB Rating (1-5)</label>
                                   <input
-                                      type="text"
-                                      placeholder="Enter IMDB rating"
+                                      type="number"
+                                      min="1"
+                                      max="5"
+                                      step="0.1"
+                                      placeholder="e.g., 4.5"
                                       name="imdbRating"
                                       value={formData.imdbRating}
                                       onChange={handleInputChange}
+                                      className="mm-input"
                                   />
                               </div>
                           </div>
 
-                          <div>
-                              <label>Trailer URL</label>
+                          <div className="mm-form-group">
+                              <label className="mm-label">Trailer URL</label>
                               <input
-                                  type="text"
-                                  placeholder="Enter trailer URL"
+                                  type="url"
+                                  placeholder="Enter YouTube or trailer URL"
                                   name="trailerURL"
                                   value={formData.trailerURL}
                                   onChange={handleInputChange}
+                                  className="mm-input"
                               />
                           </div>
-                          <div>
-                              <label>Movie Poster</label>
-                              <input
-                                  type="text"
-                                  placeholder="Enter movie poster URL"
-                                  name="moviePoster"
-                                  value={formData.moviePoster}
-                                  onChange={handleInputChange}
-                              />
+
+                          <div className="mm-form-row">
+                              <div className="mm-form-group">
+                                  <label className="mm-label">Movie Poster URL</label>
+                                  <input
+                                      type="url"
+                                      placeholder="Enter poster image URL"
+                                      name="moviePoster"
+                                      value={formData.moviePoster}
+                                      onChange={handleInputChange}
+                                      className="mm-input"
+                                  />
+                              </div>
+                              <div className="mm-form-group">
+                                  <label className="mm-label">Homepage Poster URL</label>
+                                  <input
+                                      type="url"
+                                      placeholder="Enter homepage poster URL"
+                                      name="moviePosterHomepage"
+                                      value={formData.moviePosterHomepage}
+                                      onChange={handleInputChange}
+                                      className="mm-input"
+                                  />
+                              </div>
                           </div>
-                          <div>
-                              <label>Movie Poster (Home Page)</label>
-                              <input
-                                  type="text"
-                                  placeholder="Enter homepage poster URL"
-                                  name="moviePosterHomepage"
-                                  value={formData.moviePosterHomepage}
-                                  onChange={handleInputChange}
-                              />
-                          </div>
-                          <div className="modal-actions">
+
+                          <div className="mm-form-actions">
                               <button
                                   type="button"
-                                  className="cancel-btn"
+                                  className="mm-cancel-btn"
                                   onClick={handleCloseModal}
+                                  disabled={submitting}
                               >
                                   Cancel
                               </button>
-                              <button type="submit" className="save-btn">
-                                  Save
+                              <button 
+                                  type="submit" 
+                                  className="mm-save-btn"
+                                  disabled={submitting}
+                              >
+                                  {submitting ? (
+                                      <>
+                                          <span className="mm-spinner"></span>
+                                          Saving...
+                                      </>
+                                  ) : (
+                                      <>
+                                          <span className="mm-btn-icon">💾</span>
+                                          Save Movie
+                                      </>
+                                  )}
                               </button>
                           </div>
                       </form>

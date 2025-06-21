@@ -9,6 +9,7 @@ function ShowtimeMG() {
     const [searchTerm, setSearchTerm] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [submitting, setSubmitting] = useState(false);
     const [movies, setMovies] = useState([]);
     const [screens, setScreens] = useState([]);
     const [theatres, setTheatres] = useState([]);
@@ -55,7 +56,8 @@ function ShowtimeMG() {
 
   // Filter showtimes based on search
      const filteredShowtimes = showtimes.filter((showtime) =>
-        showtime.movieTitle?.toLowerCase().includes(searchTerm.toLowerCase())
+        showtime.movieTitle?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        showtime.theatreLocation?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     // Generate time options in 12-hour format
@@ -77,11 +79,13 @@ function ShowtimeMG() {
     const handleAddShowtimeClick = () => {
         setFormVisible(true);
         resetForm();
+        setError(null);
     };
 
     const handleCloseForm = () => {
         setFormVisible(false);
         resetForm();
+        setError(null);
     };
 
      const resetForm = () => {
@@ -112,235 +116,364 @@ function ShowtimeMG() {
       const handleFormSubmit = async (e) => {
         e.preventDefault();
         if (!formData.movie || !formData.seatPrice || !formData.screen) {
-            alert("Please fill in all required fields.");
+            setError("Please fill in all required fields.");
             return;
         }
 
-        // Convert 12h time to 24h format
-        const [timePart, periodPart] = formData.time.split(" ");
-        const [displayHourStr, minute] = timePart.split(":");
-        let displayHour = parseInt(displayHourStr, 10);
-        let hour24 = displayHour;
-
-        if (periodPart === "PM" && displayHour !== 12) {
-            hour24 += 12;
-        } else if (periodPart === "AM" && displayHour === 12) {
-            hour24 = 0;
-        }
-
-         const time24 = `${String(hour24).padStart(2, "0")}:${minute}`;
-
-
-         const recurrence = formData.recurrenceType === "Daily" ? { type: "daily", endDate: formData.endDate } : { type: "none"}
-        const newShowtime = {
-            movieId: formData.movie,
-            screenId: formData.screen,
-            start_date: formData.startDate,
-            start_time: time24,
-            seatPrice: parseFloat(formData.seatPrice),
-            recurrence: recurrence
-        };
+        setSubmitting(true);
+        setError(null);
 
         try {
+            // Convert 12h time to 24h format
+            const [timePart, periodPart] = formData.time.split(" ");
+            const [displayHourStr, minute] = timePart.split(":");
+            let displayHour = parseInt(displayHourStr, 10);
+            let hour24 = displayHour;
+
+            if (periodPart === "PM" && displayHour !== 12) {
+                hour24 += 12;
+            } else if (periodPart === "AM" && displayHour === 12) {
+                hour24 = 0;
+            }
+
+            const time24 = `${String(hour24).padStart(2, "0")}:${minute}`;
+
+            const recurrence = formData.recurrenceType === "Daily" ? { type: "daily", endDate: formData.endDate } : { type: "none"}
+            const newShowtime = {
+                movieId: formData.movie,
+                screenId: formData.screen,
+                start_date: formData.startDate,
+                start_time: time24,
+                seatPrice: parseFloat(formData.seatPrice),
+                recurrence: recurrence
+            };
+
             const response = await apiService.showtimes.create(newShowtime);
-            const data = response.data;
             
             //Refresh the data from backend
             const response_details = await apiService.showtimes.getAllWithDetails();
             setShowtimes(response_details.data);
-            alert("Showtime Added Successfully")
-
+            
+            handleCloseForm();
         }
         catch (error) {
             const errorMessage = handleApiError(error, 'Failed to create showtime');
-            alert(errorMessage);
+            setError(errorMessage);
+        } finally {
+            setSubmitting(false);
         }
-
-        handleCloseForm();
     };
 
     const handleDelete = async (id) => {
+      if (!window.confirm('Are you sure you want to delete this showtime?')) {
+          return;
+      }
+      
       try {
            await apiService.showtimes.delete(id);
            
           //Refresh the data from backend
             const response_details = await apiService.showtimes.getAllWithDetails();
             setShowtimes(response_details.data);
-          alert("Showtime Deleted Successfully")
 
         }
       catch (error) {
             const errorMessage = handleApiError(error, 'Failed to delete showtime');
-            alert(errorMessage);
+            setError(errorMessage);
       }
     };
 
     if (loading) {
-        return <div className="loading">Loading showtimes...</div>;
+        return (
+            <div className="stm-loading-container">
+                <div className="stm-loading-spinner"></div>
+                <p>Loading showtimes...</p>
+            </div>
+        );
     }
 
-    if (error) {
-        return <div className="error">Error: {error}</div>;
+    if (error && !isFormVisible) {
+        return (
+            <div className="stm-error-container">
+                <div className="stm-error-icon">⚠️</div>
+                <h2>Error Loading Data</h2>
+                <p>{error}</p>
+                <button onClick={() => window.location.reload()} className="stm-retry-btn">
+                    Retry
+                </button>
+            </div>
+        );
     }
 
     return (
-        <div className="showtime-content">
-            <div className="app">
-                <header className="showtime-management-header">
+        <div className="stm-container">
+            <div className="stm-header">
+                <div className="stm-header-content">
                     <h1>Showtime Management</h1>
+                    <p>Schedule and manage movie showtimes</p>
+                </div>
+                <button className="stm-add-btn" onClick={handleAddShowtimeClick}>
+                    <span className="stm-btn-icon">⏰</span>
+                    Add Showtime
+                </button>
+            </div>
+
+            <div className="stm-search-container">
+                <div className="stm-search-wrapper">
+                    <span className="stm-search-icon">🔍</span>
                     <input
                         type="text"
-                        placeholder="Search Movies"
-                        className="search-bar"
+                        placeholder="Search by movie or theatre..."
+                        className="stm-search-input"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
-                    <button className="add-showtime-btn" onClick={handleAddShowtimeClick}>
-                        Add Showtime
-                    </button>
-                </header>
+                </div>
+            </div>
 
-                <table className="showtime-table">
-                    <thead>
-                    <tr>
-                         <th>Movie</th>
-                        <th>Theatre</th>
-                        <th>Screen</th>
-                        <th>Start Date</th>
-                        <th>Recurrence Type</th>
-                        <th>End Date</th>
-                        <th>Time</th>
-                        <th>Format</th>
-                        <th>Seat Price</th>
-                        <th>Action</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {filteredShowtimes.map((showtime) => (
-                        <tr key={showtime._id}>
-                            <td>{showtime.movieTitle}</td>
-                            <td>{showtime.theatreLocation}</td>
-                            <td>{showtime.screenNumber}</td>
-                            <td>{showtime.startDate.split("T")[0]}</td>
-                            <td>{showtime.recurrenceType}</td>
-                             <td>{showtime.endDate ? showtime.endDate.split("T")[0] : ""}</td>
-                            <td>{showtime.startTime}</td>
-                            <td>{showtime.screenFormat}</td>
-                            <td>{showtime.seatPrice}</td>
-                            <td className="tablebtnrow">
-                                <button onClick={() => handleDelete(showtime._id)}>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-x-lg" viewBox="0 0 16 16">
-                                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-                                    </svg>
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
+            <div className="stm-content">
+                <div className="stm-table-header">
+                    <h2>Scheduled Showtimes ({filteredShowtimes.length})</h2>
+                </div>
 
-                {isFormVisible && (
-                    <div className="form-overlay">
-                        <div className="form-container">
-                            <h2>Add Showtime</h2>
-                            <form onSubmit={handleFormSubmit}>
-                                <div className="form-group">
-                                    <label>Movie</label>
-                                    <select name="movie" value={formData.movie} onChange={handleFormChange}>
+                {filteredShowtimes.length === 0 ? (
+                    <div className="stm-empty-state">
+                        <div className="stm-empty-icon">🎭</div>
+                        <h3>No Showtimes Found</h3>
+                        <p>{searchTerm ? 'No showtimes match your search criteria' : 'Start by scheduling your first showtime'}</p>
+                    </div>
+                ) : (
+                    <div className="stm-table-container">
+                        <table className="stm-table">
+                            <thead>
+                                <tr>
+                                    <th>Movie</th>
+                                    <th>Theatre</th>
+                                    <th>Screen</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Recurrence</th>
+                                    <th>End Date</th>
+                                    <th>Format</th>
+                                    <th>Price</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredShowtimes.map((showtime) => (
+                                    <tr key={showtime._id}>
+                                        <td className="stm-movie-cell">
+                                            <div className="stm-movie-info">
+                                                <span className="stm-movie-title">{showtime.movieTitle}</span>
+                                            </div>
+                                        </td>
+                                        <td>{showtime.theatreLocation}</td>
+                                        <td>
+                                            <span className="stm-screen-badge">
+                                                Screen {showtime.screenNumber}
+                                            </span>
+                                        </td>
+                                        <td>{new Date(showtime.startDate).toLocaleDateString()}</td>
+                                        <td>
+                                            <span className="stm-time-badge">{showtime.startTime}</span>
+                                        </td>
+                                        <td>
+                                            <span className={`stm-recurrence-badge ${showtime.recurrenceType?.toLowerCase()}`}>
+                                                {showtime.recurrenceType || 'None'}
+                                            </span>
+                                        </td>
+                                        <td>{showtime.endDate ? new Date(showtime.endDate).toLocaleDateString() : '-'}</td>
+                                        <td>
+                                            <span className="stm-format-badge">{showtime.screenFormat}</span>
+                                        </td>
+                                        <td>
+                                            <span className="stm-price-badge">${showtime.seatPrice}</span>
+                                        </td>
+                                        <td>
+                                            <button 
+                                                className="stm-delete-btn"
+                                                onClick={() => handleDelete(showtime._id)}
+                                                title="Delete showtime"
+                                            >
+                                                🗑️
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </div>
+
+            {isFormVisible && (
+                <div className="stm-modal-overlay">
+                    <div className="stm-modal-content">
+                        <div className="stm-modal-header">
+                            <h2>Add New Showtime</h2>
+                            <button className="stm-modal-close" onClick={handleCloseForm}>×</button>
+                        </div>
+
+                        {error && (
+                            <div className="stm-error-message">
+                                <span className="stm-error-icon">⚠️</span>
+                                {error}
+                            </div>
+                        )}
+
+                        <form onSubmit={handleFormSubmit} className="stm-form">
+                            <div className="stm-form-row">
+                                <div className="stm-form-group">
+                                    <label className="stm-label">Movie *</label>
+                                    <select 
+                                        name="movie" 
+                                        value={formData.movie} 
+                                        onChange={handleFormChange}
+                                        className="stm-select"
+                                        required
+                                    >
                                         <option value="">Select a movie</option>
                                         {movies.map((movie) => (
                                             <option key={movie._id} value={movie._id}>{movie.title}</option>
                                         ))}
                                     </select>
                                 </div>
-                                  <div className="form-group">
-                                        <label>Theatre Location</label>
-                                        <input
-                                            type="text"
-                                            name="theatreLocation"
-                                            value={formData.theatreLocation}
-                                            readOnly
-                                        />
+
+                                <div className="stm-form-group">
+                                    <label className="stm-label">Screen *</label>
+                                    <select 
+                                        name="screen" 
+                                        value={formData.screen} 
+                                        onChange={handleFormChange}
+                                        className="stm-select"
+                                        required
+                                    >
+                                        <option value="">Select a screen</option>
+                                        {screens.map(screen => (
+                                            <option key={screen._id} value={screen._id}>
+                                                Screen {screen.screenNumber} - {screen.theatreId?.location}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
-                                <div className="form-group">
-                                    <label>Screen</label>
-                                       <select name="screen" value={formData.screen} onChange={handleFormChange}>
-                                           <option value="">Select a screen</option>
-                                             {screens.map(screen => (
-                                              <option key={screen._id} value={screen._id}> {screen.screenNumber}</option>
-                                            ))}
-                                        </select>
+                            </div>
+
+                            <div className="stm-form-group">
+                                <label className="stm-label">Theatre Location</label>
+                                <input
+                                    type="text"
+                                    name="theatreLocation"
+                                    value={formData.theatreLocation}
+                                    className="stm-input"
+                                    readOnly
+                                    placeholder="Auto-filled when screen is selected"
+                                />
+                            </div>
+
+                            <div className="stm-form-row">
+                                <div className="stm-form-group">
+                                    <label className="stm-label">Start Date *</label>
+                                    <input
+                                        type="date"
+                                        name="startDate"
+                                        value={formData.startDate}
+                                        onChange={handleFormChange}
+                                        className="stm-input"
+                                        required
+                                    />
                                 </div>
-                                <div className="form-group inline-group">
-                                    <div>
-                                        <label>Start Date</label>
+
+                                <div className="stm-form-group">
+                                    <label className="stm-label">Time *</label>
+                                    <select 
+                                        name="time" 
+                                        value={formData.time} 
+                                        onChange={handleFormChange}
+                                        className="stm-select"
+                                        required
+                                    >
+                                        {timeOptions.map((time) => (
+                                            <option key={time} value={time}>{time}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="stm-form-group">
+                                    <label className="stm-label">Seat Price *</label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        name="seatPrice"
+                                        placeholder="Enter seat price"
+                                        value={formData.seatPrice}
+                                        onChange={handleFormChange}
+                                        className="stm-input"
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="stm-form-row">
+                                <div className="stm-form-group">
+                                    <label className="stm-label">Recurrence Type</label>
+                                    <select
+                                        name="recurrenceType"
+                                        value={formData.recurrenceType}
+                                        onChange={handleFormChange}
+                                        className="stm-select"
+                                    >
+                                        <option value="None">None</option>
+                                        <option value="Daily">Daily</option>
+                                    </select>
+                                </div>
+
+                                {formData.recurrenceType === "Daily" && (
+                                    <div className="stm-form-group">
+                                        <label className="stm-label">End Date</label>
                                         <input
                                             type="date"
-                                            name="startDate"
-                                            value={formData.startDate}
+                                            name="endDate"
+                                            value={formData.endDate}
                                             onChange={handleFormChange}
+                                            min={formData.startDate}
+                                            className="stm-input"
                                         />
                                     </div>
-                                    <div>
-                                        <label>Time</label>
-                                        <select name="time" value={formData.time} onChange={handleFormChange}>
-                                            {timeOptions.map((time) => (
-                                                <option key={time} value={time}>{time}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label>Seat Price</label>
-                                        <input
-                                            type="text"
-                                            name="seatPrice"
-                                            placeholder="Enter seat price"
-                                            value={formData.seatPrice}
-                                            onChange={handleFormChange}
-                                        />
-                                    </div>
-                                </div>
+                                )}
+                            </div>
 
-                                <div className="form-group inline-group">
-                                    <div>
-                                        <label>Recurrence Type</label>
-                                        <select
-                                            name="recurrenceType"
-                                            value={formData.recurrenceType}
-                                            onChange={handleFormChange}
-                                        >
-                                            <option value="None">None</option>
-                                            <option value="Daily">Daily</option>
-                                        </select>
-                                    </div>
-                                    {formData.recurrenceType === "Daily" && (
-                                        <div>
-                                            <label>End Date</label>
-                                            <input
-                                                type="date"
-                                                name="endDate"
-                                                value={formData.endDate}
-                                                onChange={handleFormChange}
-                                                min={formData.startDate}
-                                            />
-                                        </div>
+                            <div className="stm-form-actions">
+                                <button 
+                                    type="button" 
+                                    onClick={handleCloseForm}
+                                    className="stm-cancel-btn"
+                                    disabled={submitting}
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    type="submit" 
+                                    className="stm-save-btn"
+                                    disabled={submitting}
+                                >
+                                    {submitting ? (
+                                        <>
+                                            <span className="stm-spinner"></span>
+                                            Saving...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span className="stm-btn-icon">💾</span>
+                                            Save Showtime
+                                        </>
                                     )}
-                                </div>
-
-
-                                <div className="form-actions">
-                                    <button type="button" onClick={handleCloseForm}>
-                                        Cancel
-                                    </button>
-                                    <button type="submit" className="save-button">
-                                        Save
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                )}
-            </div>
+                </div>
+            )}
         </div>
     );
 }
