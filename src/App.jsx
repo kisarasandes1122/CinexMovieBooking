@@ -18,7 +18,7 @@ import SeatSelection from './components/MovieSelectionPage/SeatSelection';
 import Moviemanagement from './Pages/Moviemanagement';
 import TheatreManage from './components/TheatreManage/TheatreManage';
 import AdminDash from './components/AdminDashboard/AdminDash';
-import Payments from './components/PaymentSection/Payments';
+import Payments from './components/PaymentSection/PaymentPage';
 import MMHeader from './components/MMHeader/MMHeader';
 import * as jwt_decode from 'jwt-decode';
 import BookingConfirmation from './components/BookingConfirm/BookingConfirm';
