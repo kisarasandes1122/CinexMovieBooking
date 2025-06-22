@@ -287,7 +287,7 @@ function ShowtimeMG() {
                                             <span className="stm-format-badge">{showtime.screenFormat}</span>
                                         </td>
                                         <td>
-                                            <span className="stm-price-badge">${showtime.seatPrice}</span>
+                                            <span className="stm-price-badge">LKR {showtime.seatPrice}</span>
                                         </td>
                                         <td>
                                             <button 
@@ -399,13 +399,13 @@ function ShowtimeMG() {
                                 </div>
 
                                 <div className="stm-form-group">
-                                    <label className="stm-label">Seat Price *</label>
+                                    <label className="stm-label">Seat Price (LKR) *</label>
                                     <input
                                         type="number"
                                         min="0"
                                         step="0.01"
                                         name="seatPrice"
-                                        placeholder="Enter seat price"
+                                        placeholder="Enter seat price in LKR"
                                         value={formData.seatPrice}
                                         onChange={handleFormChange}
                                         className="stm-input"

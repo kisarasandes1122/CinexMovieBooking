@@ -92,14 +92,14 @@ const Aboutus = () => {
           <div className="abs-team-grid">
             <div className="abs-team-member">
               <div className="abs-member-avatar">
-                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face" 
-                     alt="John Doe" className="abs-team-image" />
+                <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&h=150&fit=crop&crop=face" 
+                     alt="Kisara Sandes" className="abs-team-image" />
               </div>
               <div className="abs-member-info">
-                <h3>John Doe</h3>
+                <h3>Kisara Sandes</h3>
                 <p className="abs-member-role">Chief Executive Officer</p>
                 <p className="abs-member-bio">
-                  With over 15 years in the entertainment industry, John leads Cinex with 
+                  With over 15 years in the entertainment industry, Dilshan leads Cinex with 
                   a vision to transform how Sri Lankans experience cinema.
                 </p>
               </div>
@@ -107,14 +107,14 @@ const Aboutus = () => {
 
             <div className="abs-team-member">
               <div className="abs-member-avatar">
-                <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face" 
-                     alt="Jane Smith" className="abs-team-image" />
+                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&h=150&fit=crop&crop=face" 
+                     alt="Anjali Wijesuriya" className="abs-team-image" />
               </div>
               <div className="abs-member-info">
-                <h3>Jane Smith</h3>
+                <h3>Anjali Wijesuriya</h3>
                 <p className="abs-member-role">Chief Technology Officer</p>
                 <p className="abs-member-bio">
-                  Jane's technical expertise and innovative approach ensure Cinex remains 
+                  Anjali's technical expertise and innovative approach ensure Cinex remains 
                   at the forefront of entertainment technology.
                 </p>
               </div>
@@ -122,14 +122,14 @@ const Aboutus = () => {
 
             <div className="abs-team-member">
               <div className="abs-member-avatar">
-                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" 
-                     alt="Peter Jones" className="abs-team-image" />
+                <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&h=150&fit=crop&crop=face" 
+                     alt="Chaminda Rathnayake" className="abs-team-image" />
               </div>
               <div className="abs-member-info">
-                <h3>Peter Jones</h3>
+                <h3>Chaminda Rathnayake</h3>
                 <p className="abs-member-role">Head of Marketing</p>
                 <p className="abs-member-bio">
-                  Peter's creative strategies and deep understanding of consumer behavior 
+                  Chaminda's creative strategies and deep understanding of consumer behavior 
                   help Cinex connect with movie enthusiasts nationwide.
                 </p>
               </div>

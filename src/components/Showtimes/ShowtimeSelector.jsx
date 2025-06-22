@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './ShowtimeSelector.css';
 import { format, addDays, isSameDay, startOfDay, parse, isValid } from 'date-fns';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { apiService } from '../../utils/axios';
 import { handleApiError } from '../../utils/errorHandler';
 
@@ -17,6 +17,7 @@ function createSlug(title) {
 
 const ShowtimeSelector = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
     const [selectedDate, setSelectedDate] = useState(0);
     const [selectedTime, setSelectedTime] = useState(null);
     const [dates, setDates] = useState([]);
@@ -59,6 +60,7 @@ const ShowtimeSelector = () => {
                 id: index,
                 label: '',
                 date: format(date, 'MM/dd'),
+                fullDate: format(date, 'yyyy-MM-dd'), // Store full date for API calls
             }));
             setDates(formattedDates);
             setSelectedDate(0);
@@ -112,26 +114,17 @@ const ShowtimeSelector = () => {
             const selectedDateObj = dates.find(date => date.id === selectedDate);
             if (!selectedDateObj) {
                 setLoading(false);
-                const message =  `No date selected, cannot fetch showtimes`
+                const message = `No date selected, cannot fetch showtimes`;
                 setError(message);
                 console.error(message);
                 return;
             }
 
-             console.log("selectedDateObj before formatting:", selectedDateObj)
+            console.log("selectedDateObj before formatting:", selectedDateObj);
 
-
-            // Format the date before using it in the API call
             try {
-                const parsedDate = parse(selectedDateObj.date, 'MM/dd', new Date());
-                if (!isValid(parsedDate)) {
-                    const message = `Invalid date format: ${selectedDateObj.date}`;
-                    setError(message);
-                    console.error(message);
-                    setLoading(false);
-                    return;
-                }
-                const dateString = format(parsedDate, 'yyyy-MM-dd');
+                // Use the pre-formatted full date instead of parsing MM/dd
+                const dateString = selectedDateObj.fullDate;
                 console.log("dateString before fetch:", dateString);
 
                 const response = await apiService.showtimes.search({
@@ -167,7 +160,7 @@ const ShowtimeSelector = () => {
                 setLoading(false);
             }
         };
-        if (movieTitle) {
+        if (movieTitle && dates.length > 0) {
             fetchShowtimes();
         }
     }, [selectedDate, dates, movieTitle]);
@@ -177,7 +170,8 @@ const ShowtimeSelector = () => {
     };
 
     const handleTimeClick = (showtime) => {
-        window.location.href = `/SeatSelection?showtimeId=${showtime._id}&movieTitle=${showtime.movieId.title}`;
+        const movieTitle = showtime.movieId?.title || 'Unknown Movie';
+        navigate(`/SeatSelection?showtimeId=${showtime._id}&movieTitle=${encodeURIComponent(movieTitle)}`);
     };
 
     if (loading) {
@@ -222,10 +216,12 @@ const ShowtimeSelector = () => {
                     Object.values(showtimes.reduce((acc, showtime) => {
                         const screen = screens[showtime.screenId];
                         if (!screen) {
+                           console.warn('Screen not found for showtime:', showtime.screenId);
                            return acc;
                         }
                         const theatre = theatres[screen.theatreId];
                         if (!theatre) {
+                            console.warn('Theatre not found for screen:', screen.theatreId);
                             return acc;
                         }
 

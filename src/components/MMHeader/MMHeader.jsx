@@ -26,6 +26,8 @@ const MMHeader = () => {
   const [showForm, setShowForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [editingMovie, setEditingMovie] = useState(null);
+  const [deleting, setDeleting] = useState(null);
 
   const genreOptions = [
       { value: "action", label: "Action" },
@@ -145,6 +147,51 @@ const MMHeader = () => {
           moviePosterHomepage: "",
       });
       setSelectedGenres([]);
+      setEditingMovie(null);
+  };
+
+  const handleEditMovie = (movie) => {
+      setEditingMovie(movie);
+      setFormData({
+          title: movie.title,
+          description: movie.description,
+          cast: movie.cast,
+          director: movie.director,
+          releaseDate: movie.releaseDate ? movie.releaseDate.split('T')[0] : "",
+          duration: movie.duration,
+          rating: movie.rating,
+          genres: movie.genres,
+          imdbRating: movie.imdbRating,
+          trailerURL: movie.trailerURL,
+          moviePoster: movie.moviePoster,
+          moviePosterHomepage: movie.moviePosterHomepage,
+      });
+      
+      // Set selected genres for multi-select
+      const movieGenres = movie.genres ? movie.genres.split(',').map(genre => {
+          const option = genreOptions.find(opt => opt.value.toLowerCase() === genre.trim().toLowerCase());
+          return option || { value: genre.trim().toLowerCase(), label: genre.trim() };
+      }).filter(genre => genre.value) : [];
+      setSelectedGenres(movieGenres);
+      setShowForm(true);
+      setError(null);
+  };
+
+  const handleDeleteMovie = async (movieId) => {
+      if (!window.confirm('Are you sure you want to delete this movie? This action cannot be undone.')) {
+          return;
+      }
+
+      setDeleting(movieId);
+      try {
+          await apiService.movies.delete(movieId);
+          setMovies((prevMovies) => prevMovies.filter(movie => movie._id !== movieId));
+      } catch (err) {
+          const errorMessage = handleApiError(err, 'Failed to delete movie');
+          setError(errorMessage);
+      } finally {
+          setDeleting(null);
+      }
   };
 
   const handleGoToList = () => {
@@ -156,11 +203,22 @@ const MMHeader = () => {
       setError(null);
       setSubmitting(true);
       try {
-          const response = await apiService.movies.create(formData);
-          setMovies((prevMovies) => [...prevMovies, response.data]);
+          if (editingMovie) {
+              // Update existing movie
+              const response = await apiService.movies.update(editingMovie._id, formData);
+              setMovies((prevMovies) => 
+                  prevMovies.map(movie => 
+                      movie._id === editingMovie._id ? response.data : movie
+                  )
+              );
+          } else {
+              // Create new movie
+              const response = await apiService.movies.create(formData);
+              setMovies((prevMovies) => [...prevMovies, response.data]);
+          }
           handleCloseModal();
       } catch (err) {
-          const errorMessage = handleApiError(err, 'Failed to create movie');
+          const errorMessage = handleApiError(err, editingMovie ? 'Failed to update movie' : 'Failed to create movie');
           setError(errorMessage);
       } finally {
           setSubmitting(false);
@@ -268,6 +326,27 @@ const MMHeader = () => {
                                                >
                                                    ▶️ Trailer
                                                </a>
+                                               <button
+                                                   className="mm-edit-btn"
+                                                   onClick={() => handleEditMovie(movie)}
+                                                   disabled={deleting === movie._id}
+                                               >
+                                                   ✏️ Edit
+                                               </button>
+                                               <button
+                                                   className="mm-delete-btn"
+                                                   onClick={() => handleDeleteMovie(movie._id)}
+                                                   disabled={deleting === movie._id}
+                                               >
+                                                   {deleting === movie._id ? (
+                                                       <>
+                                                           <span className="mm-spinner"></span>
+                                                           Deleting...
+                                                       </>
+                                                   ) : (
+                                                       <>🗑️ Delete</>
+                                                   )}
+                                               </button>
                                            </div>
                                        </div>
                                    </div>
@@ -279,7 +358,7 @@ const MMHeader = () => {
               <div className="mm-modal-overlay">
                   <div className="mm-modal-content">
                       <div className="mm-modal-header">
-                          <h2>Add New Movie</h2>
+                          <h2>{editingMovie ? 'Edit Movie' : 'Add New Movie'}</h2>
                           <button className="mm-modal-close" onClick={handleCloseModal}>×</button>
                       </div>
                       
@@ -460,12 +539,12 @@ const MMHeader = () => {
                                   {submitting ? (
                                       <>
                                           <span className="mm-spinner"></span>
-                                          Saving...
+                                          {editingMovie ? 'Updating...' : 'Saving...'}
                                       </>
                                   ) : (
                                       <>
                                           <span className="mm-btn-icon">💾</span>
-                                          Save Movie
+                                          {editingMovie ? 'Update Movie' : 'Save Movie'}
                                       </>
                                   )}
                               </button>

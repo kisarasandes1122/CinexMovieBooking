@@ -156,18 +156,6 @@ const PayPalPayment = ({ amount, movieTitle, selectedDate, selectedTime, selecte
                 </div>
 
                 <div className="paypal-container">
-                    {/* Debug Information */}
-                    {process.env.NODE_ENV === 'development' && (
-                        <div style={{ padding: '10px', background: '#333', margin: '10px 0', borderRadius: '5px', fontSize: '12px' }}>
-                            <p>Debug Info:</p>
-                            <p>Script Loaded: {isScriptLoaded ? '✅' : '❌'}</p>
-                            <p>Script Error: {isScriptError ? '❌ ERROR' : '✅ OK'}</p>
-                            <p>Initialized: {isInitialized ? '✅' : '❌'}</p>
-                            <p>Processing: {isProcessing ? '⏳ PROCESSING' : '✅ READY'}</p>
-                            <p>PayPal Available: {typeof window !== 'undefined' && window.paypal ? '✅' : '❌'}</p>
-                            <p>Amount: {amount}</p>
-                        </div>
-                    )}
 
                     {!isScriptLoaded && !isScriptError && (
                         <div className="loading-paypal">
